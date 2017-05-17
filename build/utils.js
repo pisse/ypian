@@ -1,6 +1,8 @@
 var path = require('path')
 var config = require('../config')
 var ExtractTextPlugin = require('extract-text-webpack-plugin')
+var HtmlWebpackPlugin = require('html-webpack-plugin')
+var fs = require('fs')
 
 exports.assetsPath = function (_path) {
   var assetsSubDirectory = process.env.NODE_ENV === 'production'
@@ -69,3 +71,42 @@ exports.styleLoaders = function (options) {
   }
   return output
 }
+
+//根据命令行参数获取当前编译目录
+exports.getEntries = function(postfix) {
+    var curShopDir = path.join(__dirname, '../src/');
+    var self = this;
+    var entries = fs.readdirSync(curShopDir).filter(function(file) {
+        return self.filterFiles(file, postfix);
+    })
+    return entries
+}
+//获取指定后缀文件
+exports.filterFiles = function(str, postfix) {
+    var postfix = postfix || 'js';
+    var fileRe = new RegExp('\.(' + postfix + ')');
+    return fileRe.test(str);
+}
+
+//动态产生页面
+exports.gerHtmlWebpackPlugin = function() {
+    var htmlPlugins = []
+    var entries = this.getEntries()
+
+    var pages = this.getEntries('html');
+    var curDir = path.join(__dirname, '../src/');
+
+    entries.map(function(file){
+        var name = file.split('.')[0]
+        var pl = new HtmlWebpackPlugin({
+            filename: name + '.html',
+            template: pages.indexOf(name+'.html')>-1 ? curDir + '/' + name + '.html': (pages.indexOf(name + '.htm')>-1 ? name + '/' + '.htm' : 'index.html'),
+            chunks: [name, 'vendor', 'manifest'],
+            inject: true
+        })
+        htmlPlugins.push(pl)
+    });
+
+    return htmlPlugins
+}
+

@@ -7,10 +7,15 @@ function resolve (dir) {
   return path.join(__dirname, '..', dir)
 }
 
+var entries = {}
+utils.getEntries().map(function(file,v){
+    var name = file.split('.')[0]
+    entries[name] = './src/' + file;
+})
+
+
 module.exports = {
-  entry: {
-    app: './src/main.js'
-  },
+  entry: entries,
   output: {
     path: config.build.assetsRoot,
     filename: '[name].js',
@@ -22,7 +27,10 @@ module.exports = {
     extensions: ['.js', '.vue', '.json'],
     alias: {
       'vue$': 'vue/dist/vue.esm.js',
-      '@': resolve('src')
+      '@': resolve('src'),
+      'components': path.resolve(__dirname, '../src/components'),
+      'common': path.resolve(__dirname, '../src/common'),
+      'entry': path.resolve(__dirname, '../src/entry')
     }
   },
   module: {
@@ -51,7 +59,8 @@ module.exports = {
         loader: 'url-loader',
         options: {
           limit: 10000,
-          name: utils.assetsPath('img/[name].[hash:7].[ext]')
+          name: utils.assetsPath('img/[name].[hash:7].[ext]'),
+          publicPath: './'
         }
       },
       {
@@ -59,7 +68,8 @@ module.exports = {
         loader: 'url-loader',
         options: {
           limit: 10000,
-          name: utils.assetsPath('fonts/[name].[hash:7].[ext]')
+          name: utils.assetsPath('fonts/[name].[hash:7].[ext]'),
+          publicPath: './'
         }
       }
     ]
