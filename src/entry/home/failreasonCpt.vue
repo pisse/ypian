@@ -31,7 +31,7 @@
 </template>
 <style lang="stylus" rel="stylesheet/stylus">
 .failed-reason-cpt
-  margin: 10px 0 0
+  // margin: 10px 0 0
   .title .dataType
     float: right;
     font-size: 14px;
@@ -134,7 +134,7 @@
           categories: [],
           series: [],
           type: 'pie',
-          height: 200,
+          height: 280,
           marginLeft: 1,
           marginRight: 1
         }

@@ -1,5 +1,5 @@
 <template>
-  <div class="failed-reason-cpt cpt"  v-loading="isloading">
+  <div class="sms-delay-cpt cpt"  v-loading="isloading">
     <div class="title"><a href="smsrecord.html#/fail">短信耗时</a>
       <div class="dataType">
         <span class="week" :class="{'active': type=='week'}" @click="select('week')">周</span>
@@ -13,7 +13,7 @@
   </div>
 </template>
 <style lang="stylus" rel="stylesheet/stylus">
-.failed-reason-cpt
+.sms-delay-cpt
   margin: 10px 0 0
   .title .dataType
     float: right;
@@ -118,7 +118,7 @@
           type: 'waterfall',
           max: 100,
           yFormat: '{value}%',
-          height: 200,
+          height: 280,
           marginLeft: 1,
           marginRight: 1
         }

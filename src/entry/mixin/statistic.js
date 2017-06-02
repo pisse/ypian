@@ -18,6 +18,7 @@ var statisticChart = {
       let height = data.height
       let marginLeft = data.marginLeft
       let marginRight = data.marginRight
+      console.log(ele)
       var options = {
         chart: {
           renderTo: ele,

@@ -7,7 +7,7 @@
     </div>
 
     <div class="content">
-      <div class="testcontent">
+      <div class="testcontent" >
         【云片网】您的验证码是 <span>4421</span>
       </div>
 
@@ -28,7 +28,7 @@
 </template>
 <style lang="stylus" rel="stylesheet/stylus">
 .sms-test-cpt
-  margin: 10px 0 0
+  // margin: 10px 0 0
   .content
     padding: 20px
     .testcontent
@@ -62,6 +62,7 @@
   export default {
     data () {
       return {
+
       }
     },
     components: {

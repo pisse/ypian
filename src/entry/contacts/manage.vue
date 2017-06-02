@@ -66,11 +66,10 @@
           <el-pagination
                   @size-change="handleSizeChange"
                   @current-change="handleCurrentChange"
-                  :current-page="currentPage4"
-                  :page-sizes="[100, 200, 300, 400]"
-                  :page-size="100"
-                  layout="total, sizes, prev, pager, next, jumper"
-                  :total="400">
+                  :current-page="currentPage"
+                  :page-size="pageSize"
+                  layout="total, prev, pager, next, jumper"
+                  :total="total">
           </el-pagination>
         </div>
       </div>
@@ -196,6 +195,8 @@
   import vInput from 'components/filters/vInput'
 
   import Services from 'common/js/services.js'
+  import _request from '../mixin/request.js'
+  import _pagination from '../mixin/pagination.js'
 
   Vue.use(Loading.directive)
   Vue.prototype.$confirm = MessageBox.confirm
@@ -205,6 +206,7 @@
 
   let id = 1000
   export default {
+    mixins: [_request, _pagination],
     data () {
       return {
         groups: [],
@@ -289,44 +291,15 @@
         if (newGroup['id'] && newGroup['id'] !== oldGroup['id']) {
           this.getContactList()
         }
+      },
+      currentPage () {
+        this.getContactList()
       }
     },
     created () {
       this.getGroupList()
     },
     methods: {
-      showLoading (type) {
-        if (type === 'contacts') {
-          this.isContactsLoading = true
-        } else {
-          this.isloading = true
-        }
-      },
-      closeLoading (type) {
-        if (type === 'contacts') {
-          this.isContactsLoading = false
-        } else {
-          this.isloading = false
-        }
-      },
-      request (url, data, callback, loadingType) {
-        this.showLoading(loadingType)
-        this.$http.jsonp(url, {
-          params: data
-        }).then((res) => {
-          res = res.json()
-          return res
-        }).then((remoteData) => {
-          this.closeLoading(loadingType)
-          if (remoteData.code === 0) {
-            callback.call(this, remoteData)
-          } else {
-            Message({
-              message: remoteData.message
-            })
-          }
-        })
-      },
       groupValidate (formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
@@ -345,7 +318,7 @@
           this.dialogGroupModifyVisible = false
           this.$refs[formName].resetFields()
           this.getGroupList()
-          Message({
+          this.$message({
             message: '添加成功'
           })
         })
@@ -355,11 +328,12 @@
           this.dialogGroupModifyVisible = false
           this.$refs[formName].resetFields()
           this.getGroupList()
-          Message({
+          this.$message({
             message: '修改成功'
           })
         })
       },
+      // group
       getGroupList () {
         this.request(Services.contactGroupList, {}, (remoteData) => {
           this.groups = remoteData.data
@@ -376,7 +350,7 @@
         }).then(() => {
           this.request(Services.contactGroupDelete, {id: data.id}, (remoteData) => {
             this.getGroupList()
-            Message({
+            this.$message({
               message: '删除成功'
             })
           })
@@ -390,8 +364,6 @@
         this.groupForm.name = data.name
         this.groupForm.id = data.id
       },
-      handleSizeChange () {},
-      handleCurrentChange () {},
       groupSelect (data) {
         this.contactForm.group_id = data['id']
         this.contactUploadForm.group_id = data['id']
@@ -414,11 +386,12 @@
         this.request(Services.contactAdd, this.contactForm, (remoteData) => {
           this.dialogContactModifyVisible = false
           this.$refs[formName].resetFields()
-          Message({
+          this.$message({
             message: '添加成功'
           })
         })
       },
+      // file
       getContactList () {
         let groupId = this.selectedGroup['id']
         this.request(Services.contactList, {group_id: groupId}, (remoteData) => {
@@ -426,7 +399,6 @@
         }, 'contacts')
       },
       contactUploadValidate (formName) {
-        console.log(this.fileList)
         this.$refs[formName].validate((valid) => {
           if (valid) {
             // this.requestAddContact(formName)
@@ -446,7 +418,7 @@
           this.dialogContactModifyVisible = false
           this.$refs[formName].resetFields()
           this.getContactList()
-          Message({
+          this.$message({
             message: '修改成功'
           })
         })
@@ -454,6 +426,7 @@
       handleSelectionChange (val) {
         this.selectedContactList = val
       },
+      // contact
       searchContact () {
         let groupId = this.selectedGroup['id']
         let phone = this.searchForm['phone']
@@ -468,7 +441,6 @@
       },
       deleteContact () {
         let contactData = this.selectedContactList[0]
-        console.log(contactData)
         this.$confirm('确认要删除此通讯录?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -479,7 +451,7 @@
             group_id: contactData['group_id']
           }, (remoteData) => {
             this.getContactList()
-            Message({
+            this.$message({
               message: '删除成功'
             })
           })
@@ -489,7 +461,7 @@
       download () {
         let groupId = this.selectedGroup['id']
         if (!groupId) {
-          Message({
+          this.$message({
             message: '请选择通讯录组'
           })
         } else {
@@ -500,9 +472,6 @@
         store.append({ id: id++, label: 'testtest', children: [] }, data)
       },
 
-      remove (store, data) {
-        store.remove(data)
-      },
       renderContent (h, {node, data, store}) {
         let iconFoldOpen = h('i', {
           class: {
@@ -555,7 +524,7 @@
       }
     },
     components: {
-      elUpload: Upload, elSelect: Select, elOption: Option, MessageBox, Message, elInput: Input, vTitle, elTable: Table, elDialog: Dialog, elTableColumn: TableColumn, vInput, elTree: Tree, elRow: Row, elCol: Col, elPagination: Pagination, elForm: Form, elFormItem: FormItem
+      vTitle, elUpload: Upload, elSelect: Select, elOption: Option, MessageBox, Message, elInput: Input, elTable: Table, elDialog: Dialog, elTableColumn: TableColumn, vInput, elTree: Tree, elRow: Row, elCol: Col, elPagination: Pagination, elForm: Form, elFormItem: FormItem
     }
   }
 </script>

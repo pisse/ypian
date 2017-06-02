@@ -79,7 +79,7 @@
           </div>
           <div class="phone-simulator">
             <div class="sms-content">
-              {{ruleForm.sign}}{{ruleForm.content}}
+              {{ruleForm.sign}}{{ruleForm.content}}{{shortLinkForm.generated}}
             </div>
           </div>
           <!--<div class="history-manager">
@@ -156,7 +156,7 @@
         </el-form-item>
         <el-alert
                 v-show="showShortTip"
-                title="短连接生成成功，请直接选择复制"
+                title="短连接生成成功，已插入到短信中"
                 :closable="false"
                 type="info">
         </el-alert>

@@ -1,7 +1,7 @@
 <template>
   <div class="leftnav">
     <nav class="left">
-      <el-menu :default-active="defautActive" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose">
+      <el-menu :default-active="defautActive" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" theme="dark">
         <el-menu-item index="1"><i class="el-icon-menu"></i><a href="./main.html">管理控制台</a></el-menu-item>
         <el-submenu index="2">
           <template slot="title"><i class="el-icon-message"></i>国内短信</template>
@@ -10,11 +10,13 @@
             <el-menu-item index="2-3"><a href="./statistic.html">数据统计</a></el-menu-item>
         </el-submenu>
 
-        <el-submenu index="3">
+        <!--<el-submenu index="3">
           <template slot="title"><i class="el-icon-edit"></i>短链统计</template>
-          <el-menu-item index="3-1">点击统计</el-menu-item>
-          <el-menu-item index="3-2">营销对比</el-menu-item>
-        </el-submenu>
+          <el-menu-item index="3-1"><a href="./clickstat.html">点击统计</a></el-menu-item>
+          <el-menu-item index="3-2"><a href="./compare.html">营销对比</a></el-menu-item>
+        </el-submenu>-->
+
+        <el-menu-item index="3"><i class="el-icon-menu"></i><a href="./clickstat.html">营销分析</a></el-menu-item>
 
         <el-menu-item index="4"><i class="el-icon-menu"></i><a href="./contacts.html">通讯录</a></el-menu-item>
 
@@ -46,7 +48,7 @@
       padding-bottom: 30px
       &::-webkit-scrollbar
         width: 0
-      .el-menu
+     /* .el-menu
         background-color : inherit
         &>.el-menu-item, & .el-submenu>.el-submenu__title
           color: #999
@@ -78,7 +80,7 @@
           a
             display : inline-block
             width: 100%
-
+*/
 </style>
 <script type="text/ecmascript-6">
   import { menu, menuItem, submenu, menuItemGroup } from 'element-ui'

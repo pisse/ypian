@@ -50,6 +50,9 @@
         default: 'datatime'
       }
     },
+    created () {
+      console.log('created')
+    },
     components: {
       elDatePicker: DatePicker
     }

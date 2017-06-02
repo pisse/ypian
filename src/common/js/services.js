@@ -1,13 +1,14 @@
 /**
  * Created by Administrator on 2017/5/7.
  */
-const Domain = 'http://116.62.67.16/frontend/web/'
+const Domain = 'http://client.q1069.com/frontend/web/'
 
 let Services = {
   // 控制台
   controlTodayData: Domain + 'data/home',
   // 用户
   userLogin: Domain + 'user/login',
+  userLoginOut: Domain + 'user/login-out',
 
   // 通讯录组
   contactGroupAdd: Domain + 'phone/group-add',

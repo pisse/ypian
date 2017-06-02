@@ -20,11 +20,11 @@
       <div class="currentInfo">
         <span class="count">0.50元</span>
         <!--<charge-btn-cpt></charge-btn-cpt>-->
-        <div class="online-charge" _v-07a5aa8f="">
+        <!--<div class="online-charge" _v-07a5aa8f="">
           <ui-button type="primary" size="small"> 充值</ui-button>
-        </div>
+        </div>-->
       </div>
-      <div class="change">显示条数</div>
+     <!-- <div class="change">显示条数</div>-->
     </div>
     <div class="singleAccount">
       <div class="content">
@@ -32,7 +32,7 @@
           <a href="/dashboard/config/account#!/config/account/subAccount">
             账户：{{userInfo.username}}
           </a>
-          <span class="system">系统</span>
+          <!--<span class="system">系统</span>-->
           <div class="newAccountDiv">
             <el-tooltip class="item" effect="dark" content="Top Left 提示文字" placement="top-start">
               <!--<a href="/dashboard/config/account#!/config/account/subAccount">新建子账号<span class="hoverIcon"></span></a>-->
@@ -113,7 +113,7 @@
       display: inline-block
     .count
       margin: 0 10px;
-      float: left;
+      // float: left;
       line-height: 30px;
       color: #333;
       font-size: 18px;

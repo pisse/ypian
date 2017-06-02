@@ -15,8 +15,8 @@
           </div>
         </div>
         <div class="rightContent fl">
-          <notice-cpt></notice-cpt>
-          <smstest-cpt></smstest-cpt>
+         <!-- <notice-cpt></notice-cpt>-->
+         <!-- <smstest-cpt></smstest-cpt>-->
           <failreason-cpt></failreason-cpt>
           <smsdelay-cpt></smsdelay-cpt>
         </div>
