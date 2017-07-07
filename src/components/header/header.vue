@@ -2,16 +2,16 @@
   <div class="header">
     <el-menu :default-active="activeIndex" class="head-nav" mode="horizontal" @select="handleSelect">
       <el-menu-item index="1">
-        <a href=""><span class="logo"></span></a>
+        <a href="./main.html"><span class="logo"></span></a>
       </el-menu-item>
-      <div class="fr mr20">
+      <div class="fr">
       <!--  <el-menu-item index="3"><a href="" target="_blank">智鼎官网</a></el-menu-item>
         <el-menu-item index="3"><a href="" target="_blank">API文档</a></el-menu-item>
         <el-menu-item index="3"><a href="" target="_blank">帮助</a></el-menu-item>-->
 
         <el-submenu index="2">
-          <template slot="title">hi，您好</template>
-          <el-menu-item index="logout">退出</el-menu-item>
+          <template slot="title">您好，{{userInfo.username}}</template>
+          <el-menu-item index="logout" class="logout"><i class="iconfont icon-tuichu"></i>退出</el-menu-item>
         </el-submenu>
 
       </div>
@@ -27,11 +27,12 @@
     height: 60px
     /*padding: 0 10px*/
     background-color: rgb(51,51,51)
+    box-shadow: 0 0 20px #d3d3d3;
     z-index: 999
-    /*.el-menu--horizontal .el-submenu .el-submenu__icon-arrow
+    .el-menu--horizontal .el-submenu .el-submenu__icon-arrow
         color: #fff
-    .el-menu--horizontal .el-submenu > .el-menu
-      background-color : #03a9f4
+    /*.el-menu--horizontal .el-submenu > .el-menu
+      background-color : #75c2fd
     .el-menu--horizontal .el-submenu .el-menu-item
       background-color : inherit
     .el-submenu
@@ -42,17 +43,24 @@
     .logo
       display: block;
       float: left;
-      margin-left: 30px;
+      margin-left: 0px;
       width: 96px;
       height: 60px;
-      background: url(/static/images/logo.png) no-repeat center;
+      background: url(../../assets/logo.png) no-repeat center;
       background-size: 96px auto;
-   /* .head-nav
-      background-color : rgb(242,242,242)
+    .head-nav
+      background-color : #373d41
+      &.el-menu--horizontal .el-menu-item
+        border-bottom : none
+      &.el-menu--horizontal > .el-menu-item:hover
+        border-bottom : none
       .el-menu-item, .el-submenu__title
-        color: rgb(51,51,51)
+        color: #fff
         &:hover
-          background-color : inherit*/
+          background-color : inherit
+        &.logout
+          color: rgb(51,51,51)
+          text-align : center
       .fr
         float: right
 
@@ -60,7 +68,6 @@
 
 </style>
 <script type="text/ecmascript-6">
-  import { menu, menuItem, submenu } from 'element-ui'
   import _request from '../../entry/mixin/request.js'
   import Services from 'common/js/services.js'
 
@@ -69,10 +76,20 @@
     data () {
       return {
         activeIndex: '1',
-        activeIndex2: '1'
+        activeIndex2: '1',
+        userInfo: {}
       }
     },
+    created () {
+      this.getUserInfo()
+    },
     methods: {
+      getUserInfo () {
+        this.requestPost(Services.userInfo, {}, (remoteData) => {
+          this.userInfo = remoteData.data || {}
+          this.$emit('user_info', this.userInfo)
+        })
+      },
       confirm () {
         this.$confirm('确认退出?', '提示', {
           confirmButtonText: '确定',
@@ -95,12 +112,11 @@
       },
       handleSelect (key, keyPath) {
         if (key == 'logout') {
-          this.logout()
+          this.confirm()
         }
       }
     },
     components: {
-      elMenu: menu, elMenuItem: menuItem, elSubmenu: submenu
     }
   }
 </script>

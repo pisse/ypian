@@ -409,16 +409,16 @@
 
 .el-color-dropdown__btn:hover {
 
-    color: #20a0ff;
+    color: #75c2fd;
 
-    border-color: #20a0ff;
+    border-color: #75c2fd;
 }
 
 .el-color-dropdown__link-btn {
 
     cursor: pointer;
 
-    color: #20a0ff;
+    color: #75c2fd;
 
     text-decoration: none;
 
@@ -429,7 +429,7 @@
 
 .el-color-dropdown__link-btn:hover {
 
-    color: rgb(77, 179, 255);
+    color: rgb(145, 206, 253);
 }
 
 .el-color-picker {

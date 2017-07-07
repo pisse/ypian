@@ -2,14 +2,14 @@
   <div class="contacts-content">
     <!--<v-title text="通讯录维护"></v-title>-->
 
-    <el-row :gutter="10">
+    <el-row :gutter="10" v-loading="isLoading">
       <el-col :span="6">
         <div class="contact-group">
 
         <div class="group-head">
           <el-button type="primary" icon="plus" size="small" @click="modifyType=1;dialogGroupModifyVisible=true">新增</el-button>
         </div>
-        <div class="contact-group-list"  v-loading="isloading">
+        <div class="contact-group-list" >
           <el-tree
                   ref="groupTree"
                   highlight-current
@@ -33,8 +33,10 @@
           <el-button type="primary" icon="plus" size="small" @click="dialogContactModifyVisible=true">新增</el-button>
           <el-button type="primary" icon="edit" size="small" @click="modifyContact" :disabled="!isContactModifyEnable">修改</el-button>
           <el-button type="primary" icon="delete" size="small" @click="deleteContact" :disabled="!isContactDeleteEnable">删除</el-button>
-          <el-button type="primary" icon="upload2" size="small" @click="dialogContactUploadVisible=true">导入</el-button>
+          <el-button type="primary" icon="upload2" size="small" @click="uploadType=1;dialogContactUploadVisible=true">导入</el-button>
+          <el-button type="primary" icon="upload2" size="small" @click="uploadType=2;dialogContactUploadVisible=true">剔除导入</el-button>
           <el-button type="primary" icon="arrow-down" size="small" @click="download">导出</el-button>
+
         </div>
         <el-table
                 v-loading="isContactsLoading"
@@ -76,8 +78,8 @@
       </el-col>
 
     </el-row>
-    <el-dialog :title="modifyType==1 ? '新建通讯录组': '修改组名'" v-model="dialogGroupModifyVisible" size="tiny" >
-      <el-form :model="groupForm" :rules="newGroupRules" ref="groupModify"  v-loading="isloading">
+    <el-dialog :title="modifyType==1 ? '新建通讯录组': modifyType==2 ? '修改组名': '复制通讯录'" v-model="dialogGroupModifyVisible" size="tiny" >
+      <el-form :model="groupForm" :rules="newGroupRules" ref="groupModify"  v-loading="isLoading">
         <el-form-item label="组名" label-width="60px" prop="name">
           <el-input v-model="groupForm.name" auto-complete="off"></el-input>
         </el-form-item>
@@ -89,7 +91,7 @@
     </el-dialog>
 
     <el-dialog :title="contactModifyType==1 ? '新建通讯录': '修改通讯录'" v-model="dialogContactModifyVisible" custom-class="contact-dialog">
-      <el-form :model="contactForm" :rules="contactRules" ref="contactModify"  v-loading="isloading" label-width="100px">
+      <el-form :model="contactForm" :rules="contactRules" ref="contactModify"  v-loading="isLoading" label-width="100px">
         <el-form-item label="通讯录组" prop="group_id">
           <el-select v-model="contactForm.group_id" placeholder="请选择通讯录组" >
             <el-option v-for="(group, idx) in groups" :key="group.id" :label="group.name" :value="group.id"></el-option>
@@ -108,8 +110,11 @@
       </div>
     </el-dialog>
 
-    <el-dialog title="通讯录导入" v-model="dialogContactUploadVisible" custom-class="contact-upload-dialog">
-      <el-form :model="contactUploadForm" :rules="uploadRules" ref="contactUpload"  v-loading="isloading" label-width="100px">
+    <el-dialog :title="uploadType==1? '通讯录导入': '通讯录剔除导入'"
+               v-model="dialogContactUploadVisible"
+               :close-on-click-modal="false"
+               custom-class="contact-upload-dialog">
+      <el-form :model="contactUploadForm" :rules="uploadRules" ref="contactUpload"  v-loading="isUploadLoading" label-width="100px">
         <el-form-item label="通讯录组" prop="group_id">
           <el-select v-model="contactUploadForm.group_id" placeholder="请选择通讯录组" >
             <el-option v-for="(group, idx) in groups" :key="group.id" :label="group.name" :value="group.id"></el-option>
@@ -118,12 +123,18 @@
 
         <div class="upload-wrap">
           <el-upload
+                  ref="contactUploadCpt"
                   class="upload-file"
+                  with-credentials
+                  :data="contactUploadForm"
+                  :before-upload="beforeUpload"
                   :action="fileUploadUrl"
                   :on-preview="handlePreview"
+                  :on-progress="handleProgress"
                   :on-remove="handleRemove"
+                  :on-success="handleSuccessUpload"
                   :file-list="fileList">
-            <el-button size="small" type="primary">点击上传</el-button>
+            <el-button size="small" type="primary">选取文件</el-button>
             <div slot="tip" class="el-upload__tip">只能csv文件，且不超过50M</div>
           </el-upload>
         </div>
@@ -131,7 +142,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogContactUploadVisible = false">取 消</el-button>
-        <el-button type="primary" @click="contactUploadValidate('contactUpload')">确 定</el-button>
+        <el-button type="primary" :loading="isUploadLoading" @click="contactUploadValidate('contactUpload')">确 定</el-button>
       </div>
     </el-dialog>
 
@@ -153,9 +164,10 @@
       .el-tree
         border: 0
         .icon-folder3, .icon-folder2
-          color: #E8E658
+          color: #fd8f00
+          margin-right: 5px;
         .el-icon-document
-          color: rgb(77, 179, 255)
+          color: #1dc24e
           margin-right : 5px
         .el-tree-node__content
           .operations
@@ -165,6 +177,9 @@
 
             .el-icon-plus, .el-icon-delete
               padding: 8px
+            .icon-fuzhi
+              font-size : 14px
+              margin-right : 5px
           &:hover
             .operations
               display : inherit
@@ -190,7 +205,7 @@
 </style>
 <script type="text/ecmascript-6">
   import Vue from 'vue'
-  import { Table, Select, Option, Loading, TableColumn, Upload, MessageBox, Dialog, Form, FormItem, Tree, Button, Icon, Row, Col, Pagination, Input, Message } from 'element-ui'
+  // import { Table, Select, Option, Loading, TableColumn, Upload, MessageBox, Dialog, Form, FormItem, Tree, Button, Icon, Row, Col, Pagination, Input, Message } from 'element-ui'
   import vTitle from 'components/filters/vTitle'
   import vInput from 'components/filters/vInput'
 
@@ -198,24 +213,32 @@
   import _request from '../mixin/request.js'
   import _pagination from '../mixin/pagination.js'
 
-  Vue.use(Loading.directive)
-  Vue.prototype.$confirm = MessageBox.confirm
+  // Vue.use(Loading.directive)
+  // Vue.prototype.$confirm = MessageBox.confirm
 
-  Vue.component(Icon.name, Icon)
-  Vue.component(Button.name, Button)
+  // Vue.component(Icon.name, Icon)
+  // Vue.component(Button.name, Button)
 
   let id = 1000
   export default {
     mixins: [_request, _pagination],
     data () {
+      function validatePhone (rule, value, callback) {
+        if (!/^1[34578]\d{9}$/.test(value)) {
+          callback(new Error('手机号格式不对。'))
+        }
+        callback()
+      }
       return {
         groups: [],
         selectedGroup: {},
         selectedContactList: [],
-        isloading: false,
+        isLoading: false,
         isContactsLoading: false,
         modifyType: 1,
         contactModifyType: 1,
+        uploadType: 1,
+        fileUploadUrl: Services.fileUpload,
         dialogGroupModifyVisible: false,
         dialogContactModifyVisible: false,
         dialogContactUploadVisible: false,
@@ -242,7 +265,8 @@
         },
         contactRules: {
           phone: [
-            { required: true, message: '手机号码不能为空', trigger: 'change' }
+            { validator: validatePhone, trigger: 'blur' }
+            // { required: true, message: '手机号码不能为空', trigger: 'change' }
           ],
           group_id: [
             { required: true, message: '请选择通讯录组', trigger: 'change' }
@@ -253,7 +277,8 @@
             { required: true, message: '请选择通讯录组', trigger: 'change' }
           ]
         },
-        fileUploadUrl: Services.fileUpload,
+        isUploadLoading: false,
+        // fileUploadUrl: Services.fileUpload,
         searchForm: {
           phone: ''
         },
@@ -274,8 +299,7 @@
         defaultProps: {
           children: 'children',
           label: 'name'
-        },
-        currentPage4: 2
+        }
       }
     },
     computed: {
@@ -288,7 +312,7 @@
     },
     watch: {
       selectedGroup (newGroup, oldGroup) {
-        if (newGroup['id'] && newGroup['id'] !== oldGroup['id']) {
+        if (newGroup['id'] !== oldGroup['id']) {
           this.getContactList()
         }
       },
@@ -305,8 +329,10 @@
           if (valid) {
             if (this.modifyType == 1) {
               this.requestAddGroup(formName)
-            } else {
+            } else if (this.modifyType == 2) {
               this.requestEditGroup(formName)
+            } else {
+              this.requestCopyGroup(formName)
             }
           } else {
             return false
@@ -330,6 +356,16 @@
           this.getGroupList()
           this.$message({
             message: '修改成功'
+          })
+        })
+      },
+      requestCopyGroup (formName) {
+        this.request(Services.contactGroupCopy, this.groupForm, (remoteData) => {
+          this.dialogGroupModifyVisible = false
+          this.$refs[formName].resetFields()
+          this.getGroupList()
+          this.$message({
+            message: '复制成功'
           })
         })
       },
@@ -364,9 +400,18 @@
         this.groupForm.name = data.name
         this.groupForm.id = data.id
       },
+      copyGroup (data, event) {
+        event.stopPropagation()
+        this.dialogGroupModifyVisible = true
+        this.modifyType = 3
+        this.groupForm.name = ''
+        this.groupForm.id = data.id
+      },
       groupSelect (data) {
-        this.contactForm.group_id = data['id']
-        this.contactUploadForm.group_id = data['id']
+        if (data['id'] != 0) {
+          this.contactForm.group_id = data['id']
+          this.contactUploadForm.group_id = data['id']
+        }
         this.selectedGroup = data
       },
       contactValidate (formName) {
@@ -386,6 +431,7 @@
         this.request(Services.contactAdd, this.contactForm, (remoteData) => {
           this.dialogContactModifyVisible = false
           this.$refs[formName].resetFields()
+          this.getContactList()
           this.$message({
             message: '添加成功'
           })
@@ -394,27 +440,65 @@
       // file
       getContactList () {
         let groupId = this.selectedGroup['id']
-        this.request(Services.contactList, {group_id: groupId}, (remoteData) => {
+        this.request(Services.contactSearch, {group_id: groupId}, (remoteData) => {
           this.tableData = remoteData.data
+          this.total = parseInt(remoteData.total)
         }, 'contacts')
       },
       contactUploadValidate (formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
             // this.requestAddContact(formName)
+            // this.$refs.contactUploadCpt.submit()
+            this.requestUpladContact(formName)
           } else {
             return false
           }
         })
       },
-      handleRemove (file, fileList) {
-        console.log(file, fileList)
+      requestUpladContact (formName) {
+        let url = this.uploadType === 1 ? Services.newContactUpload : Services.contactUploadSub
+        this.request(url, this.contactUploadForm, (remoteData) => {
+          this.dialogContactUploadVisible = false
+          this.$refs[formName].resetFields()
+          this.fileList = []
+          this.getContactList()
+          this.$message({
+            message: remoteData.message
+          })
+        }, 'isUploadLoading')
       },
+      handleRemove (file, fileList) {
+        this.fileList = []
+        this.contactUploadForm['file_name'] = ''
+      },
+      beforeUpload () {
+        this.isUploadLoading = true
+      },
+      handleProgress () {},
       handlePreview (file) {
         console.log(file)
       },
+      handleSuccessUpload (res, file, fileList) {
+        this.isUploadLoading = false
+        if (res.code == 0) {
+          fileList.length > 1 && fileList.shift()
+          let fileName = res.data.url
+          this.contactUploadForm['file_name'] = fileName
+          // this.fileMap[file['name']] = fileName
+          // this.uploadFile = fileName
+        }
+      },
       requestEditContact (formName) {
-        this.request(Services.contactEdit, this.contactForm, (remoteData) => {
+        let oriContact = this.selectedContactList[0]
+        let params = {
+          id: oriContact['phone_id'],
+          group_id: oriContact['group_id'],
+          group_id_new: this.contactForm['group_id'],
+          phone: this.contactForm['phone'],
+          name: this.contactForm['name']
+        }
+        this.request(Services.contactEdit, params, (remoteData) => {
           this.dialogContactModifyVisible = false
           this.$refs[formName].resetFields()
           this.getContactList()
@@ -437,7 +521,8 @@
       modifyContact () {
         this.dialogContactModifyVisible = true
         this.contactModifyType = 2
-        this.contactForm = this.selectedContactList[0]
+        this.contactForm = Object.assign({}, this.selectedContactList[0])
+        console.log(this.contactForm)
       },
       deleteContact () {
         let contactData = this.selectedContactList[0]
@@ -447,7 +532,7 @@
           type: 'warning'
         }).then(() => {
           this.request(Services.contactDelete, {
-            id: contactData['id'],
+            id: contactData['phone_id'],
             group_id: contactData['group_id']
           }, (remoteData) => {
             this.getContactList()
@@ -492,7 +577,7 @@
         })
 
         let foldIcon = node.expanded ? iconFoldOpen : iconFolderClose
-        let icon = node.childNodes.length > 0 ? foldIcon : iconDocument
+        let icon = (node.childNodes.length > 0 || data.id === 0) ? foldIcon : iconDocument
         return h('span', [
           h('span', [icon, node.label]),
           h('span', {
@@ -501,10 +586,27 @@
             }
           }, [h('i', {
             class: {
+              'iconfont': true,
+              'icon-fuzhi': true
+            },
+            attrs: {
+              title: '复制'
+            },
+            style: {
+              'display': data.isDelete === false ? 'none' : 'inline'
+            },
+            on: {
+              click: this.copyGroup.bind(this, data)
+            }
+          }), h('i', {
+            class: {
               'el-icon-edit': true
             },
             style: {
               'display': data.isDelete === false ? 'none' : 'inline'
+            },
+            attrs: {
+              title: '编辑'
             },
             on: {
               click: this.editGroup.bind(this, data)
@@ -512,6 +614,9 @@
           }), h('i', {
             class: {
               'el-icon-delete': true
+            },
+            attrs: {
+              title: '删除'
             },
             style: {
               'display': data.isDelete === false ? 'none' : 'inline'
@@ -524,7 +629,7 @@
       }
     },
     components: {
-      vTitle, elUpload: Upload, elSelect: Select, elOption: Option, MessageBox, Message, elInput: Input, elTable: Table, elDialog: Dialog, elTableColumn: TableColumn, vInput, elTree: Tree, elRow: Row, elCol: Col, elPagination: Pagination, elForm: Form, elFormItem: FormItem
+      vTitle, vInput
     }
   }
 </script>

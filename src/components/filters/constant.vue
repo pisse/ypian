@@ -11,7 +11,7 @@
 .search-bar
   .constant-content-wrap
     display : inline-block
-    border: 2px solid #03a9f4
+    border: 2px solid #75c2fd
     height: 30px
     line-height : 26px
     margin-right: 5px
@@ -24,12 +24,12 @@
       position: absolute
       right: 0
       bottom: 0
-      color: #03a9f4
+      color: #75c2fd
       width: 0
       height: 0
       border-width: 10px
       border-style: solid
-      border-color: transparent #03a9f4 #03a9f4 transparent
+      border-color: transparent #75c2fd #03a9f4 transparent
     .el-icon-check
       right: -2px
       bottom: -8px

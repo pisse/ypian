@@ -1,6 +1,6 @@
 <template>
   <div class="main">
-    <ui-header></ui-header>
+    <ui-header @user_info="setUserInfo"></ui-header>
     <div class="mainContainer">
       <side-menu defautActive="2-3"></side-menu>
       <div class="right clearfix">
@@ -8,7 +8,7 @@
         <tabs :routers="routers"></tabs>
         <!-- 路由出口 -->
         <!-- 路由匹配到的组件将渲染在这里 -->
-        <router-view></router-view>
+        <router-view :userInfo="userInfo"></router-view>
 
       </div>
     </div>
@@ -23,6 +23,7 @@ import tabs from './common/tabs'
 export default {
   data () {
     return {
+      userInfo: {},
       routers: [
         {name: 'send', label: '短信发送量'},
         {name: 'arrive', label: '短信到达率'},
@@ -33,7 +34,12 @@ export default {
       ]
     }
   },
-  name: 'app',
+  name: 'statistic',
+  methods: {
+    setUserInfo (info) {
+      this.userInfo = info
+    }
+  },
   components: {
     uiHeader: Header, sideMenu, tabs
   }

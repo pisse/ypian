@@ -184,7 +184,7 @@
 }
 
 .el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content {
-  background-color: rgb(237, 247, 255);
+  background-color: rgb(244, 250, 255);
 }
 :root{
   /* Transition

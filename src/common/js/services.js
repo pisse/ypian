@@ -1,20 +1,24 @@
 /**
  * Created by Administrator on 2017/5/7.
  */
-const Domain = 'http://client.q1069.com/frontend/web/'
+const Domain = 'http://sms.q1069.com/'
 
 let Services = {
   // 控制台
   controlTodayData: Domain + 'data/home',
   // 用户
   userLogin: Domain + 'user/login',
+  checkVcode: Domain + 'user/ver-captcha',
+  getVcode: Domain + 'user/send-captcha',
   userLoginOut: Domain + 'user/login-out',
+  userInfo: Domain + 'user/get-info',
 
   // 通讯录组
   contactGroupAdd: Domain + 'phone/group-add',
   contactGroupList: Domain + 'phone/group-list',
   contactGroupDelete: Domain + 'phone/group-delete',
   contactGroupEdit: Domain + 'phone/group-modify',
+  contactGroupCopy: Domain + 'phone/copy-group',
 
   // 通讯录
   contactAdd: Domain + 'phone/list-add',
@@ -23,8 +27,14 @@ let Services = {
   contactEdit: Domain + 'phone/list-modify',
   contactSearch: Domain + 'phone/list-search',
   contactDownload: Domain + 'phone/list-out',
+  contactUpload: Domain + 'phone/list-input',
+  newContactUpload: Domain + 'phone/list-input-new',
+  contactUploadSub: Domain + 'phone/subtraction',
+  uploadListTask: Domain + 'phone/mail-list-task',
+  contactTotalNum: Domain + 'phone/group-count',
 
   // 文件上传
+  fileTaskUp: Domain + 'file/task-up',
   fileUpload: Domain + 'file/up',
   fileCheckPhone: Domain + 'message/file-check-phone',
   manualCheckPhone: Domain + 'message/manual-check-phone',
@@ -35,6 +45,16 @@ let Services = {
   messageContentCheck: Domain + 'message/manual-check-msg',
   messageCreateShort: Domain + 'short-link/create-activity',
   messageSend: Domain + 'message/send-msg',
+  messageRecord: Domain + 'message/record-list',
+  messageRecordReply: Domain + 'message/reply-list',
+
+  // 发送任务
+  messageList: Domain + 'message/list',
+
+  // 营销
+  clickStatList: Domain + 'click-data/list',
+  clickStatDetail: Domain + 'click-data/detail',
+  clickStatDetailNew: Domain + 'click-data/detail-new',
 
   // 数据统计
   dataRealtimeSend: Domain + 'data/send-amount-actual',

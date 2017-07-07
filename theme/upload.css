@@ -183,7 +183,7 @@
     top: 0;
     height: 100%;
     border-radius: 2px 0 0 2px;
-    background-color: #20a0ff;
+    background-color: #75c2fd;
     text-align: right;
     border-radius: 100px;
     line-height: 1;
@@ -336,8 +336,8 @@
 }
 
 .el-upload--picture-card:hover{
-    border-color: #20a0ff;
-    color: #20a0ff;
+    border-color: #75c2fd;
+    color: #75c2fd;
 }
 
 .el-upload-dragger{
@@ -360,7 +360,7 @@
 }
 
 .el-upload-dragger .el-upload__text em{
-    color: #20a0ff;
+    color: #75c2fd;
     font-style: normal;
 }
 
@@ -382,12 +382,12 @@
 }
 
 .el-upload-dragger:hover{
-    border-color: #20a0ff;
+    border-color: #75c2fd;
 }
 
 .el-upload-dragger.is-dragover{
     background-color: rgba(32, 159, 255, .06);
-    border: 2px dashed #20a0ff;
+    border: 2px dashed #75c2fd;
 }
 
 .el-upload-list{
@@ -456,7 +456,7 @@
 }
 
 .el-upload-list__item.is-success .el-upload-list__item-name:hover{
-    color: #20a0ff;
+    color: #75c2fd;
     cursor: pointer;
 }
 
@@ -499,7 +499,7 @@
 }
 
 .el-upload-list__item-delete:hover{
-    color: #20a0ff;
+    color: #75c2fd;
 }
 
 .el-upload-list--picture-card{

@@ -1,10 +1,10 @@
 <template>
   <div class="sms-delay-cpt cpt"  v-loading="isloading">
-    <div class="title"><a href="smsrecord.html#/fail">短信耗时</a>
+    <div class="title"><a href="statistic.html#/delay">短信耗时</a>
       <div class="dataType">
-        <span class="week" :class="{'active': type=='week'}" @click="select('week')">周</span>
+        <!--<span class="week" :class="{'active': type=='week'}" @click="select('week')">周</span>
         <span class="linebar"></span>
-        <span class="month" :class="{'active': type=='month'}" @click="select('month')">月</span>
+        <span class="month" :class="{'active': type=='month'}" @click="select('month')">月</span>-->
       </div>
     </div>
     <div class="chart-wrap">
@@ -62,10 +62,10 @@
 </style>
 <script type="text/ecmascript-6">
   import Vue from 'vue'
-  import { Loading } from 'element-ui'
+  // import { Loading } from 'element-ui'
   import Services from 'common/js/services.js'
   import moment from 'moment'
-  Vue.use(Loading.directive)
+  // Vue.use(Loading.directive)
   import statisticMixin from '../mixin/statistic'
 
   const dateFormat = 'YYYY-MM-DD'
@@ -91,8 +91,8 @@
         let type = this.type
         let num = type == 'week' ? 7 : 30
         let params = {
-          start_date: moment().subtract(num, 'days').format(dateFormat),
-          end_date: moment().subtract(1, 'days').format(dateFormat)
+          start_time: moment().subtract(num, 'days').format(dateFormat),
+          end_time: moment().subtract(1, 'days').format(dateFormat)
         }
         this.isloading = true
         this.$http.jsonp(Services.dataHistoryeDelay, {
@@ -115,10 +115,10 @@
           ele: 'delayChart',
           categories: [],
           series: [],
-          type: 'waterfall',
+          type: 'column',
           max: 100,
           yFormat: '{value}%',
-          height: 280,
+          height: 320,
           marginLeft: 1,
           marginRight: 1
         }
@@ -134,9 +134,7 @@
               return this.y + '%'
             },
             style: {
-              color: '#FFFFFF',
-              fontWeight: 'bold',
-              textShadow: '0px 0px 3px black'
+              color: 'rgb(51,51,51)'
             }
           }
         }

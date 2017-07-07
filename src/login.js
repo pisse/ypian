@@ -6,9 +6,12 @@
 import Vue from 'vue'
 import VueResource from 'vue-resource'
 import Login from './entry/login'
+import ElementUI from 'element-ui'
 
+Vue.use(ElementUI)
 Vue.use(VueResource)
 
+import 'element-ui/lib/theme-default/index.css'
 import 'common/stylus/index.styl'
 
 Vue.config.productionTip = false

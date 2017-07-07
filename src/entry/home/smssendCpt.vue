@@ -1,10 +1,10 @@
 <template>
-  <div class="sms-send-cpt cpt" v-loading="isloading">
-    <div class="title"><a href="smsrecord.html#/send">{{name}}</a>
+  <div class="sms-send-cpt cpt" v-loading="isLoading">
+    <div class="title"><a :href="dataType==='send' ? 'statistic.html#/send' : 'statistic.html#/arrive'">{{name}}</a>
       <div class="dataType">
-        <span class="week" :class="{'active': type=='week'}" @click="select('week')">周</span>
+        <!--<span class="week" :class="{'active': type=='week'}" @click="select('week')">周</span>
         <span class="linebar"></span>
-        <span class="month" :class="{'active': type=='month'}" @click="select('month')">月</span>
+        <span class="month" :class="{'active': type=='month'}" @click="select('month')">月</span>-->
       </div>
     </div>
     <div class="content">
@@ -41,19 +41,20 @@
 </style>
 <script type="text/ecmascript-6">
   import Vue from 'vue'
-  import { Loading } from 'element-ui'
+  // import { Loading } from 'element-ui'
   import Services from 'common/js/services.js'
   import moment from 'moment'
-  Vue.use(Loading.directive)
+  // Vue.use(Loading.directive)
   import statisticMixin from '../mixin/statistic'
+  import _request from '../../entry/mixin/request.js'
 
   const dateFormat = 'YYYY-MM-DD'
   export default {
-    mixins: [statisticMixin],
+    mixins: [statisticMixin, _request],
     data () {
       return {
         type: 'week',
-        isloading: false
+        isLoading: false
       }
     },
     props: {
@@ -74,20 +75,13 @@
         let type = this.type
         let num = type == 'week' ? 7 : 30
         let params = {
-          start_date: moment().subtract(num, 'days').format(dateFormat),
-          end_date: moment().subtract(1, 'days').format(dateFormat)
+          start_time: moment().subtract(num, 'days').format(dateFormat),
+          end_time: moment().subtract(1, 'days').format(dateFormat)
         }
-        this.isloading = true
+        this.isLoading = true
         let url = this.dataType == 'send' ? Services.dataHistoryeSend : Services.dataHistoryeArrive
-        this.$http.jsonp(url, {
-          params: params
-        }).then((res) => {
-          res = res.json()
-          return res
-        }).then((remoteData) => {
-          this.isloading = false
+        this.request(url, params, (remoteData) => {
           if (remoteData.code == 0) {
-            console.log(remoteData)
             this.formatByType(remoteData.data)
           }
         })
@@ -103,21 +97,27 @@
         let ret = {
           ele: this.chartId,
           title: '',
+          type: 'spline',
           categories: [],
           series: [],
           height: 300,
-          yFormat: '{value}条'
+          yFormat: '{value}'
         }
         let lineObj = {
           name: '发送量',
           data: []
         }
-        let tableData = []
+        let max = 0
         for (var k in data.list) {
+          let num = data['list'][k]['send_total']
+          if (num > max) {
+            max = num
+          }
           ret['categories'].push(k)
-          lineObj['data'].push(data['list'][k]['send_total'])
+          lineObj['data'].push(num)
           data['list'][k]['date'] = k
         }
+        ret['tickIntervalY'] = Math.round(max / 5)
         ret.series.push(lineObj)
 
         this.drawLine(ret)
@@ -131,18 +131,19 @@
           height: 300,
           max: 100,
           yFormat: '{value}%',
+          tooltipSuffix: '%',
           type: 'column'
         }
         let seriesOpt = {
-          recv_success_total: {
+          recv_success_total_rate: {
             name: '成功',
             data: []
           },
-          recv_fail_total: {
+          recv_fail_total_rate: {
             name: '失败',
             data: []
           },
-          recv_no_total: {
+          recv_no_total_rate: {
             name: '未知',
             data: []
           }
@@ -150,7 +151,7 @@
         for (var k in data.list) {
           ret['categories'].push(k)
           for (var key in seriesOpt) {
-            seriesOpt[key]['data'].push(data.list[k][key])
+            seriesOpt[key]['data'].push(parseFloat(data.list[k][key]))
           }
           data['list'][k]['date'] = k
         }
@@ -164,7 +165,7 @@
       }
     },
     components: {
-      Loading
+      // Loading
     }
   }
 </script>

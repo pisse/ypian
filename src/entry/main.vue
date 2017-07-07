@@ -6,17 +6,18 @@
       <div class="right clearfix">
         <div class="middleContent fl">
           <el-row>
-            <el-col :span="15"><home-personal :userInfo="userInfo" class="cpt"></home-personal></el-col>
-            <el-col :span="9"><today-data class="cpt"></today-data></el-col>
+            <el-col :span="13"><home-personal :userInfo="userInfo" class="cpt"></home-personal></el-col>
+            <el-col :span="11"><today-data class="cpt"></today-data></el-col>
           </el-row>
           <div class="charts">
             <smssend-cpt dataType="send" chartId="smsSend" name="短信发送量"></smssend-cpt>
-            <smssend-cpt dataType="arrive" chartId="smsRate" name="到达统计率"></smssend-cpt>
+            <smssend-cpt dataType="arrive" chartId="smsRate" name="到达率统计"></smssend-cpt>
           </div>
         </div>
         <div class="rightContent fl">
          <!-- <notice-cpt></notice-cpt>-->
          <!-- <smstest-cpt></smstest-cpt>-->
+          <calendar></calendar>
           <failreason-cpt></failreason-cpt>
           <smsdelay-cpt></smsdelay-cpt>
         </div>
@@ -26,10 +27,10 @@
 </template>
 
 <script>
-import { Button, Select, Row, Col } from 'element-ui'
 import Header from 'components/header/header'
 import sideMenu from 'components/sideMenu/side'
 import homePersonal from 'entry/home/personal'
+import calendar from 'entry/home/calendarCpt'
 import todayData from './home/todayData'
 import noticeCpt from './home/noticeCpt'
 import smstestCpt from './home/smstestCpt'
@@ -37,8 +38,10 @@ import failreasonCpt from './home/failreasonCpt'
 import smsdelayCpt from './home/smsdelayCpt'
 import smssendCpt from './home/smssendCpt'
 import Services from 'common/js/services.js'
+import _request from './mixin/request.js'
 
 export default {
+  mixins: [_request],
   name: 'app',
   data () {
     return {
@@ -50,17 +53,13 @@ export default {
   },
   methods: {
     getUserInfo () {
-      this.$http.jsonp(Services.messageSignInfo, {
-      }).then((res) => {
-        res = res.json()
-        return res
-      }).then((remoteData) => {
-        this.userInfo = remoteData.user_info || {}
+      this.requestPost(Services.userInfo, {}, (remoteData) => {
+        this.userInfo = remoteData.data || {}
       })
     }
   },
   components: {
-    uiHeader: Header, sideMenu, elRow: Row, elCol: Col, homePersonal, todayData, noticeCpt, smstestCpt, failreasonCpt, smssendCpt, smsdelayCpt
+    uiHeader: Header, sideMenu, homePersonal, todayData, noticeCpt, smstestCpt, failreasonCpt, smssendCpt, smsdelayCpt, calendar
   }
 }
 </script>
@@ -72,7 +71,7 @@ export default {
     position: relative
     width: 100%
     height: 100%
-    padding-left: 200px
+    padding-left: 180px
     .right
       background-color : #f5f5f5
       .middleContent

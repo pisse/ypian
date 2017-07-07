@@ -4,9 +4,12 @@ import Vue from 'vue'
 import App from './entry/contacts.vue'
 import router from './router/contacts'
 import VueResource from 'vue-resource'
+import ElementUI from 'element-ui'
 
+Vue.use(ElementUI)
 Vue.use(VueResource)
 
+import 'element-ui/lib/theme-default/index.css'
 import 'common/stylus/index.styl'
 
 Vue.config.productionTip = false

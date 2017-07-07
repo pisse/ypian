@@ -3,12 +3,12 @@
     <div class="search-box">
       <date-picker :formData="formData"  type="date" :opt="dataRange" dateFormat="yyyy-MM-dd"></date-picker>
       <br/>
-      <v-button text="查询" :loading="isloading" @search="search"></v-button>
+      <v-button text="查询" :loading="isLoading" @search="search"></v-button>
 
       <div class="table-wrap">
         <v-title text="日账单"></v-title>
         <div class="table-operations">
-          <span class="download" @click="download"><i class="iconfont icon-download"></i>导出数据</span>
+         <!-- <span class="download" @click="download"><i class="iconfont icon-download"></i>导出数据</span>-->
         </div>
         <el-table
                 :data="tableData"
@@ -19,10 +19,10 @@
                   label="日期"
           >
           </el-table-column>
-          <el-table-column
+          <!--<el-table-column
                   prop="fee"
                   label="费用"
-          ></el-table-column>
+          ></el-table-column>-->
             <el-table-column
                     prop="total"
                     label="条数"
@@ -48,27 +48,29 @@
 </style>
 <script type="text/ecmascript-6">
   import Vue from 'vue'
-  import { Alert, DatePicker, Loading, Table, TableColumn, Pagination, MessageBox } from 'element-ui'
+  // import { Alert, DatePicker, Loading, Table, TableColumn, Pagination, MessageBox } from 'element-ui'
   import constant from 'components/filters/constant'
   import datePicker from 'components/filters/datePicker'
   import vButton from 'components/filters/vButton'
   import vTitle from 'components/filters/vTitle'
   import vRadio from 'components/filters/vRadio'
-
+  import _request from '../mixin/request'
+  
   import moment from 'moment'
 
   import Services from 'common/js/services.js'
-  Vue.use(Loading.directive)
-  Vue.prototype.$alert = MessageBox.alert
+  // Vue.use(Loading.directive)
+  // Vue.prototype.$alert = MessageBox.alert
 
-  Vue.use(Loading.directive)
+  // Vue.use(Loading.directive)
 
   const dateFormat = 'YYYY-MM-DD'
   export default {
+    mixins: [_request],
     data () {
       return {
         userInfo: {},
-        isloading: false,
+        isLoading: false,
         dataRange: {
           name: '起止时间',
           keyStart: 'start_time',
@@ -87,15 +89,13 @@
     },
     methods: {
       search () {
-        this.isloading = true
+        this.isLoading = true
+        let params = Object.assign({}, this.formData)
+        params['start_time'] = moment(params['start_time']).format(dateFormat)
+        params['end_time'] = moment(params['end_time']).format(dateFormat)
         let url = Services.dataFee
-        this.$http.jsonp(url, {
-          params: this.formData
-        }).then((res) => {
-          res = res.json()
-          return res
-        }).then((remoteData) => {
-          this.isloading = false
+        this.request(url, params, (remoteData) => {
+          this.isLoading = false
           if (remoteData.code == 0) {
             this.formatData(remoteData.data)
           }
@@ -125,7 +125,7 @@
       download () {}
     },
     components: {
-      elAlert: Alert, elTable: Table, elTableColumn: TableColumn, Loading, elPagination: Pagination, elDatePicker: DatePicker, constant, datePicker, vButton, vTitle, vRadio, MessageBox
+      constant, datePicker, vButton, vTitle, vRadio
     }
   }
 </script>

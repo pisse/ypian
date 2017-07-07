@@ -172,8 +172,8 @@
 }
 
 .el-step__head.is-finish{
-    color: #20a0ff;
-    border-color: #20a0ff;
+    color: #75c2fd;
+    border-color: #75c2fd;
 }
 
 .el-step__head.is-error{
@@ -204,8 +204,8 @@
 
 .el-step__head.is-text.is-finish{
     color: #fff;
-    background-color: #20a0ff;
-    border-color: #20a0ff;
+    background-color: #75c2fd;
+    border-color: #75c2fd;
 }
 
 .el-step__head.is-text.is-error{
@@ -246,7 +246,7 @@
 
 .el-step__title.is-finish{
     font-weight: 700;
-    color: #20a0ff;
+    color: #75c2fd;
 }
 
 .el-step__title.is-error{
@@ -276,7 +276,7 @@
 }
 
 .el-step__description.is-finish{
-    color: #20a0ff;
+    color: #75c2fd;
 }
 
 .el-step__description.is-error{

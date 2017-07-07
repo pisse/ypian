@@ -111,8 +111,8 @@
     vertical-align: middle;
 }
 .el-checkbox__input.is-indeterminate .el-checkbox__inner{
-    background-color: #20a0ff;
-    border-color: rgb(1, 144, 254);
+    background-color: #75c2fd;
+    border-color: rgb(82, 180, 254);
 }
 .el-checkbox__input.is-indeterminate .el-checkbox__inner::before{
     content: '';
@@ -128,11 +128,11 @@
     display: none;
 }
 .el-checkbox__input.is-focus .el-checkbox__inner{
-    border-color: #20a0ff;
+    border-color: #75c2fd;
 }
 .el-checkbox__input.is-checked .el-checkbox__inner{
-    background-color: #20a0ff;
-    border-color: rgb(1, 144, 254);
+    background-color: #75c2fd;
+    border-color: rgb(82, 180, 254);
 }
 .el-checkbox__input.is-checked .el-checkbox__inner::after{
     transform: rotate(45deg) scaleY(1);
@@ -181,7 +181,7 @@
                   background-color .25s cubic-bezier(.71,-.46,.29,1.46);
 }
 .el-checkbox__inner:hover{
-    border-color: #20a0ff;
+    border-color: #75c2fd;
 }
 .el-checkbox__inner::after{
     box-sizing: content-box;
@@ -343,16 +343,16 @@
     border-color: rgb(72, 87, 106);
 }
 .el-tag--primary{
-    background-color: rgba(32, 160, 255, 0.1);
-    border-color: rgba(32, 160, 255, 0.2);
-    color: #20a0ff;
+    background-color: rgba(117, 194, 253, 0.1);
+    border-color: rgba(117, 194, 253, 0.2);
+    color: #75c2fd;
 }
 .el-tag--primary .el-tag__close:hover{
-    background-color: #20a0ff;
+    background-color: #75c2fd;
     color: #fff;
 }
 .el-tag--primary.is-hit{
-    border-color: #20a0ff;
+    border-color: #75c2fd;
 }
 .el-tag--success{
     background-color: rgba(18,206,102,0.10);
@@ -601,7 +601,7 @@
 }
 
 .el-table th > .cell.highlight{
-    color: #20a0ff;
+    color: #75c2fd;
 }
 
 .el-table .caret-wrapper{
@@ -725,12 +725,12 @@
 
 .el-table__expanded-cell{
     padding: 20px 50px;
-    background-color: rgb(251, 253, 255);
+    background-color: rgb(252, 254, 255);
     box-shadow: inset 0 2px 0 #f4f4f4;
 }
 
 .el-table__expanded-cell:hover{
-    background-color: rgb(251, 253, 255) !important;
+    background-color: rgb(252, 254, 255) !important;
 }
 
 .el-table--fit{
@@ -841,7 +841,7 @@
 }
 
 .el-table--striped .el-table__body tr:nth-child(2n).current-row td{
-    background: rgb(237, 247, 255);
+    background: rgb(244, 250, 255);
 }
 
 .el-table__body tr.hover-row > td {
@@ -849,7 +849,7 @@
 }
 
 .el-table__body tr.current-row > td {
-    background: rgb(237, 247, 255);
+    background: rgb(244, 250, 255);
 }
 
 .el-table__column-resize-proxy{

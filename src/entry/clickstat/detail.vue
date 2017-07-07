@@ -3,19 +3,24 @@
     <div class="search-box">
       <v-radio :formData="formData" :opt="types"></v-radio>
       <br/>
-      <date-picker :formData="formData" type="date" :opt="dataRange" dateFormat="yyyy-MM-dd"> </date-picker>
+      <date-picker :formData="formData" type="datetime" :opt="dataRange" dateFormat="yyyy-MM-dd HH:mm:ss"> </date-picker>
       <br/>
 
-      <v-button text="查询" @search="search"></v-button>
-      <v-title text="点击量概览"></v-title>
+      <v-button text="查询" @search="getList"></v-button>
+      <v-title text="累计点击量"></v-title>
 
+      <div class="charts-wrap">
+        <div id="line" ref="chartDiv"></div>
+      </div>
+
+      <v-title text="点击量"></v-title>
       <div class="record-list">
         <!-- <div class="table-operations">
            <span class="download"><i class="iconfont icon-download"></i>导出数据</span>
          </div>-->
 
         <el-table
-                v-loading="isloading"
+                v-loading="isLoading"
                 :data="tableData"
                 stripe
                 style="width: 100%">
@@ -31,14 +36,14 @@
         </el-table>
 
         <div class="mt15">
-          <el-pagination
+          <!--<el-pagination
                   @size-change="handleSizeChange"
                   @current-change="handleCurrentChange"
                   :current-page="currentPage"
                   :page-size="pageSize"
                   layout="total, prev, pager, next, jumper"
                   :total="total">
-          </el-pagination>
+          </el-pagination>-->
         </div>
 
       </div>
@@ -47,6 +52,8 @@
 </template>
 <style lang="stylus" rel="stylesheet/stylus">
   .sendrecord-wrap
+    .charts-wrap
+      margin-top : 25px
     .record-list
       .table-operations
         text-align : right
@@ -60,7 +67,7 @@
 </style>
 <script type="text/ecmascript-6">
   import Vue from 'vue'
-  import { Alert, Loading, Table, TableColumn, Pagination, Button, Row, Col } from 'element-ui'
+  // import { Alert, Loading, Table, TableColumn, Pagination, Button, Row, Col } from 'element-ui'
   import constant from 'components/filters/constant'
   import datePicker from 'components/filters/datePicker'
   import vSelect from 'components/filters/vSelect'
@@ -70,67 +77,137 @@
   import vRadio from 'components/filters/vRadio'
 
   import moment from 'moment'
+  import Services from 'common/js/services.js'
   import _base from '../mixin/request.js'
   import _pagination from '../mixin/pagination.js'
+  import statisticMixin from '../mixin/statistic'
 
-  Vue.use(Loading.directive)
+  // Vue.use(Loading.directive)
 
   const dateFormat = 'YYYY-MM-DD HH:mm:ss'
   export default {
-    mixins: [_base, _pagination],
+    mixins: [_base, _pagination, statisticMixin],
     data () {
       return {
-        isloading: false,
         multipleSelection: [],
         types: {
           name: '统计时间',
-          key: 'statistic_time',
-          items: [{label: '按天', val: 'day'}, {label: '按时', val: 'hour'}]
+          key: 'type',
+          items: [{label: '按天', val: '2'}, {label: '按时', val: '1'}]
         },
-        tableData: [{
-          date: '2017-06-17',
-          name: '618预热',
-          url: 'http://tmall.com',
-          sms_content: '上天猫，就够了',
-          send_time: '2017-05-26',
-          click_num: '1000',
-          click_rate: '9.11%'
-        }, {
-          date: '2017-06-17',
-          name: '618预热',
-          url: 'http://tmall.com',
-          sms_content: '上天猫，就够了',
-          send_time: '2017-05-26',
-          click_num: '1000',
-          click_rate: '9.11%'
-        }],
-        columns: [{key: 'date', title: '生成时间', fixed: true}, {key: 'name', title: '活动名称'},
-          {key: 'url', title: '统计链接'}, {key: 'sms_content', title: '发送短信'}, {key: 'send_time', title: '发送时间'},
-          {key: 'click_num', title: '点击量'}, {key: 'click_rate', title: '点击率'}
+        tableData: [],
+        columns: [{key: 'date', title: '生成时间', fixed: true, width: '180px'}, {key: 'title', title: '活动名称'}, {key: 'activity_id', title: '活动ID'},
+          {key: 'short_url', title: '统计链接', width: '180px'},
+          {key: 'click_total', title: '点击量'}, {key: 'click_apr', title: '点击率'}
         ],
         dataRange: {
           name: '起止时间',
-          keyStart: 'start_date',
-          keyEnd: 'end_date',
+          keyStart: 'start_time',
+          keyEnd: 'end_time',
           desc: '可查询三个月内记录'
         },
         formData: {
-          statistic_time: 'day',
-          start_date: moment().subtract(2, 'days').hour(0).minute(0).second(0).format(dateFormat),
-          end_date: moment().hour(23).minute(59).second(59).format(dateFormat)
+          activity_id: '',
+          type: '1',
+          start_time: moment().hour(0).minute(0).second(0).format(dateFormat), // subtract(1, 'days').
+          end_time: moment().format(dateFormat)
         }
       }
     },
+    beforeRouteEnter (to, from, next) {
+      next(vm => {
+        let start_time = vm.$route.query.start_time
+        vm.formData.start_time = start_time
+
+        vm.getList()
+        vm.tabs.forEach((v, i) => {
+          if (v['name'] == 'detail' || v['name'] == 'stat') {
+            v['show'] = true
+          } else {
+            v['show'] = false
+          }
+        })
+      })
+    },
+
     props: {
-      routes: Array
+      tabs: Array,
+      userInfo: Object
+    },
+    created () {
+      this.setWatch()
     },
     methods: {
-      search () {
-        this.formData['start_date'] = moment(this.formData['start_date']).format(dateFormat)
+      setWatch () {
+        this.$watch('formData.type', (v, o) => {
+          if (v != o) {
+            this.getList()
+          }
+        })
+      },
+      getList () {
+        let params = Object.assign({}, this.formData)
+        params['page'] = this.currentPage
+        params['start_time'] = moment(params['start_time']).format(dateFormat)
+        params['end_time'] = moment(params['end_time']).format(dateFormat)
+        params['activity_id'] = this.$route.query.id
+
+        this.request(Services.clickStatDetail, params, (remoteData) => {
+          // this.tableData = remoteData.data
+          // this.pageSize = remoteData.page_size
+          this.drawChart(remoteData.data)
+          this.tableData = this.formatData(remoteData.data)
+          this.total = this.tableData.length
+        })
+      },
+      drawChart (data) {
+        if (!data || data.length == 0) {
+          this.$refs.chartDiv.innerHTML = '<div class="empty"> 暂无数据</div>'
+          return
+        }
+        let ret = {
+          ele: 'line',
+          type: 'spline',
+          title: '',
+          categories: [],
+          series: [],
+          height: 500,
+          yFormat: '{value}条',
+          tickInterval: 6,
+          minTickInterval: 1
+        }
+
+        for (var id in data) {
+          let temp = data[id]
+          let lineObj = {
+            name: '活动ID(' + id + ')',
+            data: []
+          }
+          let isFirst = true
+          for (var key in temp) {
+            ret['categories'].push(key)
+            lineObj['data'].push(temp[key]['click_total'])
+            if (isFirst && temp[key]['title']) {
+              lineObj['name'] = temp[key]['title']
+              isFirst = false
+            }
+          }
+          ret.series.push(lineObj)
+        }
+        this.drawLine(ret)
+      },
+      formatData (data) {
+        let ret = []
+        let rData = data[this.$route.query.id]
+        for (var k in rData) {
+          rData[k]['date'] = k
+          ret.push(rData[k])
+        }
+        return ret.reverse()
       }
     },
     components: {
-      vRadio, elAlert: Alert, elTable: Table, elTableColumn: TableColumn, Loading, elPagination: Pagination, constant, datePicker, vSelect, vButton, vTitle, vInput, elButton: Button, elRow: Row, elCol: Col
+      constant, datePicker, vSelect, vButton, vTitle, vInput, vRadio
     }
   }
 </script>

@@ -2,7 +2,7 @@
   <div class="tabs-wrap">
     <el-tabs :value="routerName" @tab-click="handleClick">
 
-      <el-tab-pane v-for="(item, idx) in routers" :key="idx" :name="item.name" :label="item.label"></el-tab-pane>
+      <el-tab-pane v-for="(item, idx) in routers" :key="idx" :name="item.name" :label="item.label" v-if="item.show!==false"></el-tab-pane>
 
     </el-tabs>
   </div>
@@ -24,7 +24,7 @@
 
 </style>
 <script type="text/ecmascript-6">
-  import { Tabs, TabPane } from 'element-ui'
+  // import { Tabs, TabPane } from 'element-ui'
 
   export default {
     data () {
@@ -37,7 +37,6 @@
     },
     created () {
       this.routerName = this.$route.name
-      console.log(this.routerName)
     },
     methods: {
       handleClick (tab, event) {
@@ -45,7 +44,7 @@
       }
     },
     components: {
-      elTabs: Tabs, elTabPane: TabPane
+      // elTabs: Tabs, elTabPane: TabPane
     }
   }
 </script>

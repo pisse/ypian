@@ -3,10 +3,11 @@
     <div class="search-box">
       <constant :opt="account"></constant>
       <br/>
-      <date-picker :formData="formData" type="date" :opt="dataRange" dateFormat="yyyy-MM-dd"> </date-picker>
+      <date-picker :formData="formData" type="datetime" :opt="dataRange" dateFormat="yyyy-MM-dd HH:mm:ss"> </date-picker>
       <br/>
-
-      <v-button text="查询" @search="search"></v-button>
+       <v-input :formData="formData" :opt="title"></v-input>
+        <br/>
+      <v-button text="查询" @search="getList"></v-button>
       <v-title text="短链点击统计"></v-title>
 
       <div class="record-list">
@@ -15,12 +16,12 @@
         </div>-->
 
         <el-row :gutter="20" class="table-header">
-          <el-col :span="2" :offset="20">&nbsp;<!--<el-button size="small"><i class="iconfont icon-download"></i>下载</el-button>--></el-col>
-          <el-col :span="2" ><el-button icon="plus" type="primary" size="small" :disabled="isCompare" @click="compare">对比</el-button></el-col>
+          <!--<el-col :span="2" :offset="20">&nbsp;&lt;!&ndash;<el-button size="small"><i class="iconfont icon-download"></i>下载</el-button>&ndash;&gt;</el-col>-->
+          <el-col><el-button class="mr20" icon="plus" type="primary" size="small" :disabled="isCompare" @click="compare">对比</el-button>(选择两次活动，进行对比分析，可查看活动效果差异)</el-col>
         </el-row>
 
         <el-table
-                v-loading="isloading"
+                v-loading="isLoading"
                 @selection-change="handleSelectionChange"
                 :data="tableData"
                 stripe
@@ -38,9 +39,8 @@
           ></el-table-column>
 
           <el-table-column
-              fixed="right"
               label="操作"
-              width="100px">
+              width="80px">
             <template scope="scope">
               <!--<el-button @click="onDetail" type="text" size="small">查看</el-button>-->
               <el-button @click.prevent="onDetail(scope.$index, scope.row)" type="text" size="small">查看</el-button>
@@ -88,82 +88,101 @@
   import vInput from 'components/filters/vInput'
   import vTitle from 'components/filters/vTitle'
   import moment from 'moment'
-  import _base from '../mixin/request.js'
-  import _pagination from '../mixin/pagination.js'
+
+  import Services from 'common/js/services.js'
+  import _request from '../mixin/request'
+  import _pagination from '../mixin/pagination'
 
   Vue.use(Loading.directive)
 
   const dateFormat = 'YYYY-MM-DD HH:mm:ss'
   export default {
-    mixins: [_base, _pagination],
+    mixins: [_request, _pagination],
     data () {
       return {
-        isloading: false,
         multipleSelection: [],
-        tableData: [{
-          date: '2017-06-17',
-          name: '618预热',
-          url: 'http://tmall.com',
-          sms_content: '上天猫，就够了',
-          send_time: '2017-05-26',
-          click_num: '1000',
-          click_rate: '9.11%'
-        }, {
-          date: '2017-06-17',
-          name: '618预热',
-          url: 'http://tmall.com',
-          sms_content: '上天猫，就够了',
-          send_time: '2017-05-26',
-          click_num: '1000',
-          click_rate: '9.11%'
-        }],
-        columns: [{key: 'date', title: '生成时间', fixed: true}, {key: 'name', title: '活动名称'},
-          {key: 'url', title: '统计链接'}, {key: 'sms_content', title: '发送短信'}, {key: 'send_time', title: '发送时间'},
-          {key: 'click_num', title: '点击量'}, {key: 'click_rate', title: '点击率'}
+        tableData: [],
+        columns: [{key: 'created_at', title: '生成时间'}, {key: 'title', title: '活动名称'},
+          {key: 'short_url', title: '统计链接'}, {key: 'total_message', title: '发送短信'}, {key: 'send_time', title: '发送时间'},
+          {key: 'click_total', title: '点击量'}, {key: 'click_apr', title: '点击率'}
         ],
-        account: {name: '账户名', value: 'changdlerHuang'},
+        account: {name: '账户名', value: ''},
         dataRange: {
           name: '起止时间',
-          keyStart: 'start_date',
-          keyEnd: 'end_date',
+          keyStart: 'start_time',
+          keyEnd: 'end_time',
           desc: '可查询三个月内记录'
         },
-        mobile: {
-          name: '手机号',
-          key: 'phone',
-          placeHolder: '请填写正确的手机号',
-          rules: [{ phone: true, message: '请填写正确11位手机号', trigger: 'blur' }]
+        title: {
+          name: '活动标题',
+          key: 'title',
+          placeHolder: '请填写活动标题'
         },
-        currentPage4: 2,
         formData: {
-          status: 'all',
-          phone: '',
-          start_date: moment().subtract(2, 'days').hour(0).minute(0).second(0).format(dateFormat),
-          end_date: moment().hour(23).minute(59).second(59).format(dateFormat)
+          title: '',
+          start_time: moment().subtract(2, 'days').hour(0).minute(0).second(0).format(dateFormat),
+          end_time: moment().hour(23).minute(59).second(59).format(dateFormat)
         }
       }
     },
     props: {
-      routes: Array
+      tabs: Array,
+      userInfo: Object
+    },
+    beforeRouteEnter (to, from, next) {
+      next(vm => {
+        vm.tabs.forEach((v, i) => {
+          if (v['name'] != 'stat') {
+            v['show'] = false
+          }
+        })
+      })
+    },
+    watch: {
+      currentPage () {
+        this.getList()
+      },
+      userInfo (newVal) {
+        this.account.value = newVal['username']
+        // this.formData.user_id = newVal['user_id']
+      }
     },
     computed: {
       isCompare () {
         return this.multipleSelection.length !== 2
       }
     },
+    created () {
+      this.getList()
+      this.account.value = this.userInfo['username']
+    },
     methods: {
-      search () {
-        this.formData['start_date'] = moment(this.formData['start_date']).format(dateFormat)
+      getList () {
+        let params = Object.assign({}, this.formData)
+        params['page'] = this.currentPage
+        params['start_time'] = moment(params['start_time']).format(dateFormat)
+        params['end_time'] = moment(params['end_time']).format(dateFormat)
+
+        this.request(Services.clickStatList, params, (remoteData) => {
+          this.tableData = remoteData.data
+          // this.pageSize = remoteData.page_size
+          this.total = parseInt(remoteData.total)
+        })
       },
       onDetail (idx, rowData) {
+        this.tabs.forEach((v, i) => {
+          v['show'] = true
+        })
         let id = rowData['id'] || 12
-        this.$router.push({name: 'detail', query: { id: id }})
+        this.$router.push({name: 'detail', query: { id: id, start_time: rowData.push_start_time }})
       },
       compare () {
-        this.$router.push({name: 'compare', query: { id: 12 }})
+        let compareIds = this.multipleSelection.map((v, i) => {
+          return v['id']
+        })
+        this.$router.push({name: 'compare', query: { id: compareIds.join() }})
       },
       handleSelectionChange (val) {
-        console.log(val)
         this.multipleSelection = val
       }
     },

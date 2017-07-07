@@ -10,7 +10,7 @@
 
       <!--<constant :formData="formData" :opt="category" @select="selectCate"></constant>-->
       <br/>
-      <v-button text="查询" :loading="isloading" @search="search"></v-button>
+      <v-button text="查询" :loading="isLoading" @search="search"></v-button>
       <v-title text="短信耗时概览"></v-title>
 
       <div class="charts-wrap">
@@ -34,7 +34,7 @@
 </style>
 <script type="text/ecmascript-6">
   import Vue from 'vue'
-  import { Alert, DatePicker, Loading, Table, TableColumn, Pagination, MessageBox } from 'element-ui'
+  // import { Alert, DatePicker, Loading, Table, TableColumn, Pagination, MessageBox } from 'element-ui'
   import constant from 'components/filters/constantMulti'
   import datePicker from 'components/filters/datePicker'
   import vButton from 'components/filters/vButton'
@@ -45,74 +45,83 @@
 
   import statisticMixin from '../mixin/statistic'
   import Services from 'common/js/services.js'
-  Vue.use(Loading.directive)
-  Vue.prototype.$alert = MessageBox.alert
+  import _request from '../mixin/request'
+  import _pagination from '../mixin/pagination'
+  // Vue.use(Loading.directive)
+  // Vue.prototype.$alert = MessageBox.alert
 
-  Vue.use(Loading.directive)
+  // Vue.use(Loading.directive)
 
   const dateFormat = 'YYYY-MM-DD'
   export default {
-    mixins: [statisticMixin],
+    mixins: [statisticMixin, _request, _pagination],
     data () {
       return {
-        userInfo: {},
-        isloading: false,
         category: {label: '账户名', key: 'category', items: [{name: '全部(含验证码、通知、营销)', value: 'all'}, {name: '仅验证码', value: 'code'}]},
         types: {
-          name: '接受状态',
+          name: '统计类型',
           key: 'statistic_type',
           items: [{label: '实时统计（今日）', val: 'realtime'}, {label: '历史统计', val: 'history'}]
         },
         dataRange: {
           name: '起止时间',
-          keyStart: 'start_date',
-          keyEnd: 'end_date',
+          keyStart: 'start_time',
+          keyEnd: 'end_time',
           desc: '可查询三个月内记录'
         },
         formData: {
           category: 'all',
           statistic_type: 'realtime',
-          start_date: moment().subtract(7, 'days').format(dateFormat),
-          end_date: moment().subtract(1, 'days').format(dateFormat)
+          start_time: moment().subtract(7, 'days').format(dateFormat),
+          end_time: moment().subtract(1, 'days').format(dateFormat)
         },
         tableData: []
       }
     },
+    props: {
+      userInfo: Object
+    },
     watch: {
-      formData: {
-        handler: function (val, oldVal) {
-          this.search()
-        },
-        deep: true
+      userInfo (newVal) {
+        this.account.value = newVal['username']
+        // this.formData.user_id = newVal['user_id']
       }
     },
     created () {
-      this.getUserInfo()
       this.search()
+      this.setWatch()
+      // this.account.value = this.userInfo['username']
+      this.setRealtimeTimeout()
     },
     methods: {
-      getUserInfo () {
-        this.$http.jsonp(Services.messageSignInfo, {
-        }).then((res) => {
-          res = res.json()
-          return res
-        }).then((remoteData) => {
-          this.userInfo = remoteData.user_info || {}
+      setRealtimeTimeout () {
+        if (this.realTimeout) {
+          clearTimeout(this.realTimeout)
+          this.realTimeout = null
+        }
+        this.realTimeout = setTimeout(() => {
+          if (this.formData.statistic_type == 'realtime') {
+            this.search()
+          }
+          this.setRealtimeTimeout()
+        }, 1000 * 10 * 60)
+      },
+      setWatch () {
+        this.$watch('formData.statistic_type', (v, o) => {
+          if (v != o) {
+            this.search()
+          }
         })
       },
       selectCate (val) {
         this.formData['category'] = val
       },
       search () {
-        this.isloading = true
         let url = this.formData.statistic_type == 'realtime' ? Services.dataRealtimeDelay : Services.dataHistoryeDelay
-        this.$http.jsonp(url, {
-          params: this.formData
-        }).then((res) => {
-          res = res.json()
-          return res
-        }).then((remoteData) => {
-          this.isloading = false
+        let params = Object.assign({}, this.formData)
+        params['start_time'] = moment(params['start_time']).format(dateFormat)
+        params['end_time'] = moment(params['end_time']).format(dateFormat)
+        this.request(url, params, (remoteData) => {
           if (remoteData.code == 0) {
             this.formatLineData(remoteData.data)
           }
@@ -127,7 +136,7 @@
           ele: 'chart',
           categories: [],
           series: [],
-          type: 'waterfall',
+          type: 'column', // waterfall
           max: 100,
           yFormat: '{value}%'
         }
@@ -157,13 +166,12 @@
           })
         }
         ret.series.push(lineObj)
-        console.log(lineObj)
         this.drawLine(ret)
       },
       download () {}
     },
     components: {
-      elAlert: Alert, elTable: Table, elTableColumn: TableColumn, Loading, elPagination: Pagination, elDatePicker: DatePicker, constant, datePicker, vButton, vTitle, vRadio, MessageBox
+      constant, datePicker, vButton, vTitle, vRadio
     }
   }
 </script>

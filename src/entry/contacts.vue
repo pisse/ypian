@@ -29,7 +29,7 @@ export default {
   name: 'contacts',
   data () {
     return {
-      routers: [{name: 'contacts', label: '通讯录管理'}]
+      routers: [{name: 'contacts', label: '通讯录管理'}, {name: 'upload', label: '通讯录导入任务'}]
     }
   },
   components: {

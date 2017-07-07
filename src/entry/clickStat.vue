@@ -1,14 +1,14 @@
 <template>
   <div class="main">
-    <ui-header></ui-header>
+    <ui-header @user_info="setUserInfo"></ui-header>
     <div class="mainContainer">
       <side-menu defautActive="3"></side-menu>
       <div class="right clearfix">
 
-        <tabs :routers="routers"></tabs>
+        <tabs :routers="routers" ref="tabs"></tabs>
         <!-- 路由出口 -->
         <!-- 路由匹配到的组件将渲染在这里 -->
-        <router-view></router-view>
+        <router-view :userInfo="userInfo" :tabs="routers"></router-view>
 
       </div>
     </div>
@@ -23,10 +23,24 @@ import tabs from './common/tabs'
 export default {
   data () {
     return {
-      routers: [{name: 'stat', label: '点击统计'}]
+      userInfo: {},
+      routers: [{name: 'stat', label: '点击统计', show: true}, {name: 'detail', label: '点击统计明细', show: false}, {name: 'compare', label: '营销对比', show: false}]
     }
   },
-  name: 'app',
+  name: 'clickstat',
+  watch: {
+    routers: {
+      handler: function (val, oldVal) {
+        this.$refs.tabs.routerName = this.$route.name
+      },
+      deep: true
+    }
+  },
+  methods: {
+    setUserInfo (info) {
+      this.userInfo = info
+    }
+  },
   components: {
     uiHeader: Header, sideMenu, tabs
   }

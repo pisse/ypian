@@ -498,7 +498,7 @@
     font-size: 14px;
     margin-top: -15px;
     line-height: 16px;
-    background-color: #20a0ff;
+    background-color: #75c2fd;
     height: 32px;
     z-index: -1;
     left: 0;
@@ -543,7 +543,7 @@
 }
 .el-time-panel__btn.confirm {
     font-weight: 800;
-    color: #20a0ff;
+    color: #75c2fd;
 }
 @charset "UTF-8";
 :root {
@@ -657,7 +657,7 @@
 }
 .el-input.is-active .el-input__inner {
     outline: none;
-    border-color: #20a0ff;
+    border-color: #75c2fd;
 }
 .el-input__inner {
     -webkit-appearance: none;
@@ -692,7 +692,7 @@
 }
 .el-input__inner:focus {
     outline: none;
-    border-color: #20a0ff;
+    border-color: #75c2fd;
 }
 .el-input__icon {
     position: absolute;
@@ -751,7 +751,7 @@
     display: table-cell;
 }
 .el-input-group__append, .el-input-group__prepend {
-    background-color: rgb(251, 253, 255);
+    background-color: rgb(252, 254, 255);
     color: rgb(151, 168, 190);
     vertical-align: middle;
     display: table-cell;
@@ -843,7 +843,7 @@
 }
 .el-textarea__inner:focus {
     outline: none;
-    border-color: #20a0ff;
+    border-color: #75c2fd;
 }
 @charset "UTF-8";
 :root {

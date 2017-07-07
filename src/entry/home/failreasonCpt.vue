@@ -1,16 +1,16 @@
 <template>
   <div class="failed-reason-cpt cpt"  v-loading="isloading">
-    <div class="title"><a href="smsrecord.html#/fail">失败原因统计</a>
+    <div class="title"><a href="statistic.html#/fail">失败原因统计</a>
       <div class="dataType">
-        <span class="week" :class="{'active': type=='week'}" @click="select('week')">周</span>
+       <!-- <span class="week" :class="{'active': type=='week'}" @click="select('week')">周</span>
         <span class="linebar"></span>
-        <span class="month" :class="{'active': type=='month'}" @click="select('month')">月</span>
+        <span class="month" :class="{'active': type=='month'}" @click="select('month')">月</span>-->
       </div>
     </div>
     <div class="nodataDiv" v-if="noData">
       <div class="nodata">暂无数据</div>
       <div class="legend">
-        <div class="item">
+        <!--<div class="item">
           <div class="square square1"></div>
           运营商
         </div>
@@ -21,11 +21,11 @@
         <div class="item">
           <div class="square square3"></div>
           黑名单
-        </div>
+        </div>-->
       </div>
     </div>
     <div class="" v-else>
-      <div id="failChart"></div>
+      <div id="failReasonChart"></div>
     </div>
   </div>
 </template>
@@ -49,10 +49,10 @@
   .nodataDiv
     padding-bottom: 20px;
     .nodata
-      width: 200px;
-      height: 200px;
+      width: 260px;
+      height: 260px;
       margin: 20px auto 0;
-      padding: 94px 0 0 0;
+      padding: 125px 0 0 0;
       color: #666666;
       border-radius: 50%;
       background: #fafafa;
@@ -109,8 +109,8 @@
         let type = this.type
         let num = type == 'week' ? 7 : 30
         let params = {
-          start_date: moment().subtract(num, 'days').format(dateFormat),
-          end_date: moment().subtract(1, 'days').format(dateFormat)
+          start_time: moment().subtract(num, 'days').format(dateFormat),
+          end_time: moment().subtract(1, 'days').format(dateFormat)
         }
         this.isloading = true
         this.$http.jsonp(Services.dataHistoryeFail, {
@@ -121,7 +121,7 @@
         }).then((remoteData) => {
           this.isloading = false
           if (remoteData.code == 0) {
-            this.noData = false
+            this.noData = remoteData.data.length == 0
             this.$nextTick(() => {
               this.formatFail(remoteData.data)
             })
@@ -129,23 +129,27 @@
         })
       },
       formatFail (data) {
+        if (!data || data.length == 0) {
+          return
+        }
         let ret = {
-          ele: 'failChart',
+          ele: 'failReasonChart',
           categories: [],
           series: [],
           type: 'pie',
-          height: 280,
+          height: 320,
           marginLeft: 1,
-          marginRight: 1
+          marginRight: 1,
+          tooltipSuffix: '%'
         }
         let lineObj = {
-          name: '失败原因',
+          name: '失败占比',
           data: [],
           type: 'pie'
         }
-        let tableData = []
+        // let tableData = []
         for (var k in data) {
-          lineObj['data'].push(['原因' + data[k]['reason'], data[k]['reason_total']])
+          lineObj['data'].push([data[k]['reason'], parseFloat(data[k]['rate'])])
         }
         ret.series.push(lineObj)
         this.drawLine(ret)

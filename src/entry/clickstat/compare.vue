@@ -1,10 +1,12 @@
 <template>
   <div class="sendrecord-wrap">
     <div class="search-box">
-      <constant :opt="account"></constant>
+      <!--<constant :opt="account"></constant>
+      <br/>-->
+      <v-radio :formData="formData" :opt="types"></v-radio>
       <br/>
-      <date-picker :formData="formData" type="date" :opt="dataRange" dateFormat="yyyy-MM-dd"> </date-picker>
-      <br/>
+      <!--<date-picker :formData="formData" type="date" :opt="dataRange" dateFormat="yyyy-MM-dd"> </date-picker>
+      <br/>-->
 
       <v-button text="查询" @search="search"></v-button>
       <v-title text="营销对比"></v-title>
@@ -20,7 +22,7 @@
         </el-row>
 -->
         <div class="highcharts-container" >
-          <div id="chartWrap"></div>
+          <div id="chartWrap" ref="chartDiv"></div>
         </div>
 
       </div>
@@ -42,93 +44,131 @@
 </style>
 <script type="text/ecmascript-6">
   import Vue from 'vue'
-  import { Alert, Loading, Table, TableColumn, Pagination, Button, Row, Col } from 'element-ui'
+  // import { Alert, Loading, Table, TableColumn, Pagination, Button, Row, Col } from 'element-ui'
   import constant from 'components/filters/constant'
   import datePicker from 'components/filters/datePicker'
   import vSelect from 'components/filters/vSelect'
   import vButton from 'components/filters/vButton'
   import vInput from 'components/filters/vInput'
   import vTitle from 'components/filters/vTitle'
+  import vRadio from 'components/filters/vRadio'
   import moment from 'moment'
   import _base from '../mixin/request.js'
   import _statistic from '../mixin/statistic.js'
-  import _pagination from '../mixin/pagination.js'
 
-  Vue.use(Loading.directive)
+  // Vue.use(Loading.directive)
+  import Services from 'common/js/services.js'
 
-  const dateFormat = 'YYYY-MM-DD HH:mm:ss'
+  const dateFormat = 'YYYY-MM-DD'
   export default {
-    mixins: [_base, _statistic, _pagination],
+    mixins: [_base, _statistic],
     data () {
       return {
-        isloading: false,
-        account: {name: '账户名', value: 'changdlerHuang'},
+        account: {name: '账户名', value: ''},
         dataRange: {
           name: '起止时间',
-          keyStart: 'start_date',
-          keyEnd: 'end_date',
+          keyStart: 'start_time',
+          keyEnd: 'end_time',
           desc: '可查询三个月内记录'
         },
-        mobile: {
-          name: '手机号',
-          key: 'phone',
-          placeHolder: '请填写正确的手机号',
-          rules: [{ phone: true, message: '请填写正确11位手机号', trigger: 'blur' }]
+        types: {
+          name: '统计时间',
+          key: 'type',
+          items: [{label: '36小时', val: '1'}, {label: '72小时', val: 2}]
         },
         formData: {
-          status: 'all',
-          phone: '',
-          start_date: moment().subtract(2, 'days').hour(0).minute(0).second(0).format(dateFormat),
-          end_date: moment().hour(23).minute(59).second(59).format(dateFormat)
+          type: '1'
+          // start_time: moment().hour(0).minute(0).second(0).format(dateFormat), // .subtract(2, 'days')
+          // end_time: moment().hour(23).minute(59).second(59).format(dateFormat)
         }
       }
     },
     props: {
-      routes: Array
+      tabs: Array,
+      userInfo: Object
     },
-    created () {
-      this.$nextTick(() => {
-        this.format([])
+    beforeRouteEnter (to, from, next) {
+      next(vm => {
+        vm.tabs.forEach((v, i) => {
+          if (v['name'] == 'compare' || v['name'] == 'stat') {
+            v['show'] = true
+          } else {
+            v['show'] = false
+          }
+        })
       })
     },
+    watch: {
+      userInfo (newVal) {
+        this.account.value = newVal['username']
+        // this.formData.user_id = newVal['user_id']
+      }
+    },
+    created () {
+      this.account.value = this.userInfo['username']
+      this.setWatch()
+      this.search()
+    },
     methods: {
+      setWatch () {
+        this.$watch('formData.type', (v, o) => {
+          if (v != o) {
+            this.search()
+          }
+        })
+      },
       search () {
-        this.formData['start_date'] = moment(this.formData['start_date']).format(dateFormat)
+        let params = Object.assign({}, this.formData)
+        params['page'] = this.currentPage
+        // params['start_time'] = moment(params['start_time']).format(dateFormat)
+        // params['end_time'] = moment(params['end_time']).format(dateFormat)
+        params['activity_id'] = this.$route.query.id
+
+        this.request(Services.clickStatDetailNew, params, (remoteData) => {
+          // this.tableData = remoteData.data
+          // this.pageSize = remoteData.page_size
+          this.format(remoteData)
+          // this.total = this.tableData.length
+        })
       },
       format (data) {
         let ret = {
           ele: 'chartWrap',
+          type: 'spline',
           title: '',
           categories: [],
           series: [],
-          height: 400,
-          yFormat: '{value}条'
+          height: 500,
+          yFormat: '{value}%',
+          tickInterval: 3,
+          minTickInterval: 1,
+          tooltipSuffix: '%'
         }
-        let lineObj = {
-          name: '总数',
-          data: []
-        }
-        let lineObjSuccess = {
-          name: '成功数',
-          data: []
-        }
-        for (var i = 0; i < data.length; i++) {
-          let temp = data[i]
-          for (var key in temp['data']) {
-            ret['categories'].push(key)
-            lineObj['data'].push(temp['data'][key]['record_total'])
-            lineObjSuccess['data'].push(temp['data'][key]['success_total'])
+        let isFirst = true
+        let showData = data.show_data
+        let activityData = data.activity_data
+        for (var id in showData) {
+          let temp = showData[id]
+          let lineObj = {
+            name: activityData[id]['title'] || id,
+            data: []
           }
+          for (var key in temp) {
+            if (isFirst) {
+              ret['categories'].push(key)
+              // lineObj['name'] = temp[key]['title']
+            }
+            lineObj['data'].push(parseFloat(temp[key]))
+          }
+          isFirst = false
+          ret.series.push(lineObj)
         }
-        ret.series.push(lineObj)
-        ret.series.push(lineObjSuccess)
-        console.log(ret)
 
         this.drawLine(ret)
       }
     },
     components: {
-      elAlert: Alert, elTable: Table, elTableColumn: TableColumn, Loading, elPagination: Pagination, constant, datePicker, vSelect, vButton, vTitle, vInput, elButton: Button, elRow: Row, elCol: Col
+      constant, datePicker, vSelect, vButton, vTitle, vInput, vRadio
     }
   }
 </script>

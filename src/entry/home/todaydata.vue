@@ -1,18 +1,18 @@
 <template>
   <div class="today-data-cpt">
-    <div class="title"><a href="/dashboard/domestic/statistic#!/domestic/statistic/arrive">今日数据</a></div>
+    <div class="title"><a href="javascript:void(0);">今日数据</a></div>
     <div class="content three">
       <div class="item item1">
         <span></span>今日发送条数
       </div>
       <div class="data">
-        <a href="/dashboard/domestic/record#!/domestic/record/send">{{userInfo.total_message}}条</a>
+        <a href="./smsrecord.html#/send">{{userInfo.total_message}}条</a>
       </div>
       <div class="item">
         <span class="span2"></span>到达率
       </div>
       <div class="data">
-        <a href="/dashboard/domestic/statistic#!/domestic/statistic/arrive" class="rate">
+        <a href="./statistic.html#/arrive" class="rate">
           <span>成功{{userInfo.recv_success_total_rate}}</span>
           <span>失败{{userInfo.recv_fail_total_rate}}</span>
           <span>未知{{userInfo.recv_no_total_rate}}</span>
@@ -22,7 +22,7 @@
         <span class="span3"></span>请求失败数
       </div>
       <div class="data">
-        <a href="/dashboard/smsFailure#!/smsFailure">{{userInfo.apply_total}}条</a>
+        <a href="./statistic.html#/fail">{{userInfo.apply_total}}条</a>
       </div>
     </div>
   </div>
@@ -35,29 +35,34 @@
     padding: 20px
   .item
     margin-top: 10px;
-    color: #666666
     span
       display: inline-block;
       margin-right: 10px;
-      margin-top: 4px;
-      width: 7px;
-      height: 7px;
+      // margin-top: 4px;
+      width: 18px;
+      height: 18px;
       vertical-align: top;
       border-radius: 50%
+      background-position: center;
+      background-repeat : no-repeat;
+      background-size : 100%;
+      margin-top : -2px;
   .item1
     margin-top: 0
     span
-      background: #1abc9c
+      background-image : url('../../assets/success.png')
   .span2
-    background: #f39c12
+    background-image : url('../../assets/arrive.png')
   .span3
-    background: #297cbb
+    background-image : url('../../assets/fail.png')
   .span4
-    background: #03a9f4
+    background-image : url('../../assets/fail.png')
   .data
-    padding: 10px 0 10px 17px;
+    padding: 10px 0 10px 28px;
     font-size: 14px;
     line-height: 14px
+    a
+      color: #666666
     a:hover
       color: #03a9f4
     .rate span
@@ -65,11 +70,11 @@
       &:last-child
         margin-right: 0
   .three .data
-    padding: 20px 0 20px 17px
+    padding: 20px 0 20px 28px
 
 </style>
 <script type="text/ecmascript-6">
-  import { Button, Tooltip } from 'element-ui'
+  // import { Button, Tooltip } from 'element-ui'
   import Services from 'common/js/services.js'
   export default {
     data () {
@@ -94,7 +99,7 @@
       }
     },
     components: {
-      uiButton: Button, elTooltip: Tooltip
+      // uiButton: Button, elTooltip: Tooltip
     }
   }
 </script>

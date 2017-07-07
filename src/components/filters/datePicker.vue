@@ -8,17 +8,21 @@
                       :type="type"
                       placeholder="选择开始时间"></el-date-picker>
     </div>
-    -
-    <div class="date-time-wrap">
-      <el-date-picker v-model="formData[opt['keyEnd']]"
+
+    <template v-if="isRange !== false">
+      -
+      <div class="date-time-wrap">
+        <el-date-picker v-model="formData[opt['keyEnd']]"
                       :format="dateFormat"
                       size="small"
                       :type="type"
                       placeholder="选择结束时间"></el-date-picker>
-    </div>
-    <span class="date-time-desc" v-if="opt.desc">
-      （{{opt.desc}}）
-    </span>
+      </div>
+      <span class="date-time-desc" v-if="opt.desc">
+        （{{opt.desc}}）
+      </span>
+    </template>
+
   </div>
 </template>
 <style lang="stylus" rel="stylesheet/stylus">
@@ -48,10 +52,14 @@
       type: {
         type: String,
         default: 'datatime'
+      },
+      isRange: {
+        type: Boolean,
+        default: true
       }
     },
     created () {
-      console.log('created')
+      // console.log(this.formData)
     },
     components: {
       elDatePicker: DatePicker

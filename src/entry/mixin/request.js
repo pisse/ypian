@@ -44,9 +44,8 @@ var base = {
         if (remoteData.code === 0) {
           callback.call(this, remoteData)
         } else {
-          this.$message({
-            type: 'error',
-            message: remoteData.message
+          this.$alert(remoteData.message, '提示', {
+            type: 'error'
           })
         }
       }).catch((e) => {
@@ -79,7 +78,7 @@ var base = {
     reLogin () {
       setTimeout(() => {
         location.href = './login.html'
-      }, 1500)
+      }, 1000)
     }
   }
 }

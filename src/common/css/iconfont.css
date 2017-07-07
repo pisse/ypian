@@ -1,1 +1,41 @@
-@font-face{font-family:iconfont;src:url(../fonts/iconfont.eot?t=1493915019705);src:url(../fonts/iconfont.eot?t=1493915019705#iefix) format('embedded-opentype'),url(../fonts/iconfont.woff?t=1493915019705) format('woff'),url(../fonts/iconfont.ttf?t=1493915019705) format('truetype'),url(../fonts/iconfont.svg?t=1493915019705#iconfont) format('svg')}.iconfont{font-family:iconfont!important;font-size:16px;font-style:normal;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.icon-folder2:before{content:"\e61b"}.icon-folder:before{content:"\e616"}.icon-folder1:before{content:"\e8af"}.icon-folder3:before{content:"\e6d7"}.icon-download:before{content:"\e6af"}.icon-icon-question:before{content:"\e605"}
+
+@font-face {font-family: "iconfont";
+  src: url('../fonts/iconfont.eot?t=1497337025425'); /* IE9*/
+  src: url('../fonts/iconfont.eot?t=1497337025425#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url('../fonts/iconfont.woff?t=1497337025425') format('woff'), /* chrome, firefox */
+  url('../fonts/iconfont.ttf?t=1497337025425') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+*/
+  url('../fonts/iconfont.svg?t=1497337025425#iconfont') format('svg'); /* iOS 4.1- */
+}
+
+.iconfont {
+  font-family:"iconfont" !important;
+  font-size:16px;
+  font-style:normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-folder2:before { content: "\e61b"; }
+
+.icon-tuichu:before { content: "\e67d"; }
+
+.icon-fuzhi:before { content: "\e601"; }
+
+.icon-zhankai:before { content: "\e609"; }
+
+.icon-shousuo:before { content: "\e60d"; }
+
+.icon-folder1:before { content: "\e8af"; }
+
+.icon-folder3:before { content: "\e6d7"; }
+
+.icon-caiwu:before { content: "\e631"; }
+
+.icon-tongxunlu-copy:before { content: "\e600"; }
+
+.icon-logout:before { content: "\e64b"; }
+
+.icon-icon-question:before { content: "\e605"; }
+
+.icon-yingxiao:before { content: "\e6c6"; }
+

@@ -4,16 +4,16 @@
       <constant :opt="account"></constant>
       <br>
       <v-label :opt="account2"></v-label>
-      <el-form-item label-width="130px" label="发送手机号:" prop="source" class="form-number" >
-        <el-radio-group v-model="ruleForm.source" @change="sourceChange">
+      <el-form-item label-width="130px" label="发送手机号:" prop="phone_type" class="form-number" >
+        <el-radio-group v-model="ruleForm.phone_type" @change="sourceChange">
           <el-radio label="1">手动添加</el-radio>
-          <el-radio label="2">Excel导入</el-radio>
+          <el-radio label="2">CSV导入</el-radio>
           <el-radio label="3">通讯录导入</el-radio>
         </el-radio-group>
       </el-form-item>
       <div class="textarea-block">
-        <el-input class="manual-ipt" v-if="ruleForm.source==1" type="textarea" v-model="ruleForm.manualIpt" @blur="manualValidate" placeholder="可填写多个手机号，用逗号分开"></el-input>
-        <div class="upload-wrap"  v-else-if="ruleForm.source==2">
+        <el-input class="manual-ipt" v-if="ruleForm.phone_type==1" type="textarea" v-model="ruleForm.manualIpt" @blur="manualValidate" placeholder="可填写多个手机号，用逗号分开"></el-input>
+        <div class="upload-wrap"  v-else-if="ruleForm.phone_type==2">
           <div class="file-wrap">
             <div class="down-template">
               1. <el-button type="primary" size="small" @click="downloadTemplate">下载模板文件</el-button>
@@ -25,6 +25,7 @@
                     :action="fileUploadUrl"
                     :before-upload="handleBeforeUpload"
                     show-file-list
+                    :file-list="fileList"
                     :on-remove="handleRemoveFile"
                     :on-success="handleSuccessUpload">
               2.
@@ -34,29 +35,52 @@
           </div>
         </div>
         <div class="contacts-list" v-else>
-          <div class="contact-wrap" v-loading="isloading">
-            <el-tree
-                    ref="groupTree"
-                    highlight-current
-                    :data="groupData"
-                    :props="defaultProps"
-                    node-key="id"
-                    :current-node-key="selectedGroup.id"
-                    default-expand-all
-                    :expand-on-click-node="false"
-                    @node-click="groupSelect"
+          <div class="contact-wrap" v-loading="isLoading">
+            <div class="contact-empty" v-if="checkGroups.length ==0">---请在右侧选择通讯录---</div>
+            <el-tag
+                    v-else
+                    v-for="(tag,idx) in checkGroups"
+                    :key="tag.id"
+                    :closable="true"
+                    @close="removeContact(idx)"
+                    type="primary"
             >
-            </el-tree>
+                          {{tag.name}}
+            </el-tag>
+            <!--<el-select v-model="contactIds" @change="contactChange" multiple placeholder="请选择">
+              <el-option
+                      v-for="item in groups"
+                      :key="item.id"
+                      :label="item.name"
+                      :value="item.id">
+              </el-option>
+            </el-select>-->
           </div>
         </div>
         <div class="number-ipt-tip">
-          <span  v-if="ruleForm.source==1">当前有效手机号共 {{manualCount}} 个</span>
-          <span  v-if="ruleForm.source==2">当前上传文件为： {{uploadShowFile}}</span>
-          <span  v-if="ruleForm.source==3">当前选中通讯录为： {{selectedGroup.name}}</span>
+          <span  v-if="ruleForm.phone_type==1">当前有效手机号共 {{manualCount}} 个</span>
+          <span  v-if="ruleForm.phone_type==2">当前上传文件为： {{uploadShowFile}}</span>
+          <span  v-if="ruleForm.phone_type==3">当前选中通讯录发送<!--{{selectedGroup.name}}，-->{{contactShowTip}}</span>
           <el-tooltip placement="bottom">
             <div slot="content">系统对上传的手机号做了自动去重和去除错误手机号，<br>剩下的是有效手机号，最少1个,建议10万个以内</div>
             <i class="iconfont icon-icon-question"></i>
           </el-tooltip>
+        </div>
+        <div class="contact-select-wrap" v-if="ruleForm.phone_type==3">
+          <el-tree
+                  ref="groupTree"
+                  highlight-current
+                  :data="groupData"
+                  :props="defaultProps"
+                  show-checkbox
+                  node-key="id"
+                  :current-node-key="selectedGroup.id"
+                  default-expand-all
+                  :expand-on-click-node="false"
+                  @check-change="groupSelect"
+                  @node-click="groupSelect"
+          >
+          </el-tree>
         </div>
       </div>
       <el-form-item label-width="130px" label="短信签名 :" prop="sign">
@@ -71,15 +95,16 @@
           <div class="number-ipt-tip">
               <span>共 {{contentLength}} 个字符,<strong style="color:red;">{{smsCount}}</strong> 条短信
                 <el-tooltip placement="bottom">
-                  <div slot="content">如短信中含变量的，以实际发送字数为准，<br>默认变量为10个字。超过70字，按67字/条计算</div>
+                  <div slot="content"><!--如短信中含变量的，以实际发送字数为准，<br>默认变量为10个字。超过70字，按67字/条计算-->每条短信70个字，长短信为每条67个字。</div>
                   <i class="iconfont icon-icon-question"></i>
                 </el-tooltip>
                 </span>
+              <span v-if="ruleForm.activity_id" class="short-cut-link remove-link" @click="removeShortLink">移除短链</span>
               <span class="short-cut-link" @click="openShortLink">生成统计短链接</span>
           </div>
           <div class="phone-simulator">
             <div class="sms-content">
-              {{ruleForm.sign}}{{ruleForm.content}}{{shortLinkForm.generated}}
+              {{ruleForm.sign}}{{ruleForm.content}}<!--{{shortLinkForm.generated}}-->
             </div>
           </div>
           <!--<div class="history-manager">
@@ -115,16 +140,16 @@
 
       </el-form-item>
 
-      <el-form-item  label-width="130px"label="短信过滤:" prop="delivery">
+      <!--<el-form-item  label-width="130px"label="短信过滤:" prop="delivery">
         <el-checkbox v-model="checked2" disabled>过滤黑名单</el-checkbox>
-      </el-form-item>
+      </el-form-item>-->
 
-      <el-form-item label-width="130px" label="审核结果短信提醒:" prop="remind" class="form-number">
+      <!--<el-form-item label-width="130px" label="审核结果短信提醒:" prop="remind" class="form-number">
         <el-radio-group v-model="ruleForm.remind">
           <el-radio label="1">提醒</el-radio>
           <el-radio label="0">不提醒</el-radio>
         </el-radio-group>
-      </el-form-item>
+      </el-form-item>-->
 
       <el-alert
               title="人工审核会在30分钟内操作，请耐心等待。（工作时间：9：00~23：00）"
@@ -134,14 +159,14 @@
       <br>
 
       <el-form-item class="btn-wrap">
-        <el-button type="primary" @click="submitForm('ruleForm')">提交</el-button>
+        <el-button type="primary" @click="onSubmit('ruleForm')">提交</el-button>
       </el-form-item>
 
     </el-form>
 
     <el-dialog title="生成统计短连接" v-model="dialogFormVisible" custom-class="short-link-dialog" size="small">
       <div class="desc">
-        统计短链接服务帮您把长长的网址压缩，变成带统计功能的短链接。让您便于 控制短信长度，统计短信的点击量，更有助于优化短信发送时间、内容。 （本功能基于新浪微博短链接，云片不保证短链接可靠性）
+        统计短链接服务帮您把长长的网址压缩，变成带统计功能的短链接。让您便于 控制短信长度，统计短信的点击量，更有助于优化短信发送时间、内容。 （本功能基于新浪微博短链接，智鼎不保证短链接可靠性）
       </div>
       <el-form :model="shortLinkForm" :rules="{}" ref="shortLinkForm">
         <el-form-item label="活动名称:" :label-width="formLabelWidth">
@@ -152,7 +177,7 @@
           <el-button size="small" type="primary" :loading="isGenerating" @click="genUrl">立即生成</el-button>
         </el-form-item>
         <el-form-item label="生成的统计短连接:" :label-width="formLabelWidth">
-          <el-input size="small" v-model="shortLinkForm.generated" placeholder="短连接未生成"  :disabled="true" auto-complete="off"></el-input>
+          <el-input size="small" v-model="shortLinkForm.generated" placeholder="短连接未生成"  :disabled="!shortLinkForm.generated" auto-complete="off"></el-input>
         </el-form-item>
         <el-alert
                 v-show="showShortTip"
@@ -175,6 +200,17 @@
       </span>
     </el-dialog>
 
+    <el-dialog
+            title="通讯录导入"
+            v-model="dialogGroupVisible"
+            size="small"
+    >
+      <span>已选择通讯录组：{{dialogGroupMsg}}</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="dialogGroupVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
+
   </div>
 </template>
 <style lang="stylus" rel="stylesheet/stylus">
@@ -190,9 +226,24 @@
     .form-number
       margin-bottom : 0
     .textarea-block
+      position :relative
       margin-left: 130px
       width: 400px
       margin-bottom: 20px
+      .el-tag
+        margin-right : 10px
+        margin-bottom : 5px
+      .contact-select-wrap
+        position : absolute
+        left: 450px
+        top: 0
+        max-height : 200px
+        width: 360px
+        overflow: auto;
+        border: 1px solid rgb(191, 203, 217);
+        border-radius: 5px;
+        .el-tree
+          border : none
       .manual-ipt
         .el-textarea__inner
           min-height: 110px
@@ -213,6 +264,8 @@
         border-radius : 4px
         border: 1px solid lightgrey
         padding: 5px
+        .contact-empty
+          color: #999
     .textarea-block, .send-content-block
       width: 400px
       .number-ipt-tip
@@ -270,10 +323,13 @@
             border-color: #2cbfff;
       .short-cut-link
         float: right
+        display : inline-block
         color: #00a0ff
         cursor: pointer
         line-height: 20px
         margin-top : -4px
+        &.remove-link
+          margin-left : 10px
     .send-content
       width: 400px
       .el-textarea__inner
@@ -286,7 +342,7 @@
 
   .short-link-dialog
     .el-input
-      width: 300px
+      max-width: 300px
     .el-dialog__header
       text-align : center
     .desc
@@ -294,46 +350,19 @@
 </style>
 <script type="text/ecmascript-6">
   import Vue from 'vue'
-  import {
-    Alert,
-    Dialog,
-    Tabs,
-    Loading,
-    TabPane,
-    Form,
-    FormItem,
-    Checkbox,
-    Radio,
-    Tooltip,
-    CheckboxGroup,
-    MessageBox,
-    Message,
-    Switch,
-    DatePicker,
-    TimePicker,
-    Option,
-    Select,
-    RadioGroup,
-    Row,
-    Col,
-    Icon,
-    Input,
-    Button,
-    Tree,
-    Upload
-  } from 'element-ui'
   import constant from 'components/filters/constant'
   import vLabel from 'components/filters/vLabel'
   import _ from 'lodash'
-
+  import _request from '../mixin/request'
   import Services from 'common/js/services.js'
-  Vue.use(Loading.directive)
-  Vue.prototype.$alert = MessageBox.alert
+  // Vue.use(Loading.directive)
+  // Vue.prototype.$alert = MessageBox.alert
 
-  Vue.component(Icon.name, Icon)
-  Vue.component(Button.name, Button)
+  // Vue.component(Icon.name, Icon)
+  // Vue.component(Button.name, Button)
 
   export default {
+    mixins: [_request],
     data () {
       return {
         userInfo: {},
@@ -341,8 +370,7 @@
         shortLinkForm: {
           name: '',
           url: '',
-          generated: '',
-          activity_id: ''
+          generated: ''
         },
         formLabelWidth: '130px',
         dialogFormVisible: false,
@@ -351,13 +379,16 @@
         checked2: true,
         activeName: 'second',
         ruleForm: {
+          activity_id: '',
+          activity_url: '',
           name: '',
           sign: '',
           remind: '1',
           time: '',
           delivery: false,
-          type: [],
-          source: '1',
+          phone_type: '1',
+          mobile_total: 0,
+          total_message: 0,
           manualIpt: '',
           sendType: '1',
           content: ''
@@ -366,8 +397,10 @@
         manualIptList: [],
         phoneBlackList: [],
         errPhoneShow: false,
-        fileUploadUrl: Services.fileUpload,
-        isloading: false,
+        fileUploadUrl: Services.fileTaskUp,
+        fileList: [],
+        dialogGroupVisible: false,
+        dialogGroupMsg: '',
         groupData: [{
           id: 0,
           name: '通讯录组',
@@ -380,8 +413,12 @@
         },
         selectedGroup: {},
         contactFile: '',
+        groups: [],
+        checkGroups: [],
+        contactIds: [],
         uploadFile: '',
         uploadShowFile: '',
+        contactShowTip: '',
         isGenerating: false,
         showShortTip: false,
         rules: {
@@ -390,16 +427,10 @@
             {min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur'}
           ],
           sign: [
-            {required: true, message: '请选择活动区域', trigger: 'change'}
+            // {required: true, message: '请选择签名', trigger: 'change'}
           ],
           time: [
             {type: 'date', required: true, message: '请选择日期', trigger: 'blur'}
-          ],
-          type: [
-            {type: 'array', required: true, message: '请至少选择一个活动性质', trigger: 'change'}
-          ],
-          resource: [
-            {required: true, message: '请选择活动资源', trigger: 'change'}
           ],
           content: [
             {required: true, message: '不能为空', trigger: 'blur'}
@@ -407,6 +438,16 @@
         },
         fileMap: {}
       }
+    },
+    beforeRouteEnter (to, from, next) {
+      next(vm => {
+        vm.tabs.forEach((v, i) => {
+          v['show'] = true
+        })
+      })
+    },
+    props: {
+      tabs: Array
     },
     computed: {
       manualCount () {
@@ -416,10 +457,10 @@
         return 1
       },
       contentLength () {
-        return this.ruleForm.sign.length + this.ruleForm.content.length
+        return this.ruleForm.sign.length + this.ruleForm.content.length // + this.shortLinkForm.generated.length
       },
       smsCount () {
-        return Math.ceil(this.contentLength / 67)
+        return this.contentLength <= 70 ? 1 : Math.ceil(this.contentLength / 67)
       }
     },
     created () {
@@ -427,14 +468,11 @@
     },
     methods: {
       getUserInfo () {
-        this.$http.jsonp(Services.messageSignInfo, {
-        }).then((res) => {
-          res = res.json()
-          return res
-        }).then((remoteData) => {
-          this.userInfo = remoteData.user_info || {}
-          this.signInfo = remoteData.user_sign || {}
-          this.ruleForm.sign = this.signInfo[0]
+        this.request(Services.messageSignInfo, {
+        }, (remoteData) => {
+          this.userInfo = remoteData.data.user_info || {}
+          this.signInfo = remoteData.data.user_sign || []
+          this.ruleForm.sign = this.signInfo[0] || ''
           this.account.value = this.userInfo.username
         })
       },
@@ -472,6 +510,7 @@
             this.showInvalidPhones()
             this.manualIptList = this.clearManualPhone(validPhones, this.phoneBlackList)
             this.ruleForm.manualIpt = this.manualIptList.join(',')
+            this.ruleForm.mobile_total = res.data.mobile_total || 0
           })
         } else {
           this.showInvalidPhones()
@@ -492,27 +531,6 @@
           this.errPhoneShow = true
         }
       },
-      requestPost (url, data, callback) {
-        Vue.http.options.emulateJSON = true
-        this.$http.post(url, data, {
-          credentials: true,
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          }
-        }).then((res) => {
-          res = res.json()
-          return res
-        }).then((remoteData) => {
-          if (remoteData.code === 0) {
-            callback.call(this, remoteData)
-          } else {
-            Message({
-              type: 'error',
-              message: remoteData.message
-            })
-          }
-        })
-      },
       handleBeforeUpload (file) {
         if (/\.csv$/.test(file.name)) {
           return true
@@ -522,14 +540,21 @@
         }
       },
       handleRemoveFile (file) {
+        this.fileList = []
+        this.uploadFile = ''
+        this.uploadShowFile = ''
+        this.ruleForm.mobile_total = ''
         delete this.fileMap[file.name]
       },
       handleSuccessUpload (res, file, fileList) {
         if (res.code == 0) {
-          let fileName = res.data.url
+          fileList.length > 1 && fileList.shift()
+
+          let fileName = res.data.file
           this.fileMap[file['name']] = fileName
           this.uploadFile = fileName
-          this.uploadShowFile = file['name']
+          this.uploadShowFile = file['name'] + '，导入:' + res.data.total + ',成功:' + res.data.success + ',失败:' + res.data.fail
+          this.ruleForm.mobile_total = res.data.success || 0
         }
       },
       sourceChange (v) {
@@ -538,35 +563,52 @@
         }
       },
       getGroupList () {
-        this.isloading = true
-        this.$http.jsonp(Services.contactGroupList, {
-        }).then((res) => {
-          res = res.json()
-          return res
-        }).then((remoteData) => {
-          this.isloading = false
+        this.request(Services.contactGroupList, {
+        }, (remoteData) => {
           if (remoteData.code === 0) {
             this.groups = remoteData.data
             this.groupData[0].children = remoteData.data
-            this.selectedGroup = this.groups[0] || {}
+            this.checkGroups = []
+            this.contactIds = []
+            // this.selectedGroup = this.groups[0] || {}
+            // this.groupSelect(this.groups[0] || {})
           }
         })
       },
       groupSelect (data) {
-        this.selectedGroup = data
-
-        this.isloading = true
-        this.$http.jsonp(Services.contactCheckPhone, {
-          params: {
-            group_id: data.id
-          }
-        }).then((res) => {
-          res = res.json()
-          return res
-        }).then((res) => {
-          this.isloading = false
-          this.contactFile = res.data.file
+        // console.log(data)
+        let checkedNodes = this.$refs.groupTree.getCheckedNodes()
+        this.checkGroups = checkedNodes.filter((item, idx) => {
+          return item.id != 0
         })
+        // console.log(checkedNodes)
+        if (this.checkGroups.length === 0) {
+          return
+        }
+        this.contactIds = this.checkGroups.map((item, idx) => {
+          return item.id
+        })
+        this.request(Services.contactTotalNum, {
+          group_id: this.contactIds.join()
+        }, (res) => {
+          // this.showGroupDialog(res.data)
+          // this.contactFile = res.data.file
+          this.contactShowTip = '，共导入' + this.contactIds.length + '个组，' + res.data.total + '个号码' // + ',成功:' + res.data.success + ',失败:' + res.data.fail
+          // this.ruleForm.mobile_total = res.data.success || 0
+        })
+      },
+      removeContact (idx) {
+        this.checkGroups.splice(idx, 1)
+        this.contactIds.splice(idx, 1)
+        this.$refs.groupTree.setCheckedNodes(this.checkGroups)
+      },
+      contactChange (values) {
+        console.log(values)
+      },
+      showGroupDialog (data) {
+        this.dialogGroupVisible = true
+        let msg = this.selectedGroup.name + '，导入:' + data.total + ',成功:' + data.success + ',失败:' + data.fail
+        this.dialogGroupMsg = msg
       },
       contentValidate () {
         if (this.ruleForm.content) {
@@ -584,6 +626,16 @@
         this.shortLinkForm.name = ''
         this.shortLinkForm.url = ''
         this.shortLinkForm.generated = ''
+        // this.shortLinkForm.activity_id = ''
+      },
+      removeShortLink () {
+        this.shortLinkForm.name = ''
+        this.shortLinkForm.url = ''
+        this.shortLinkForm.generated = ''
+
+        this.ruleForm.content = this.ruleForm.content.replace(this.ruleForm.activity_url, '')
+        this.ruleForm.activity_id = ''
+        this.ruleForm.activity_url = ''
       },
       genUrl () {
         this.isGenerating = true
@@ -591,30 +643,51 @@
           this.isGenerating = false
           if (res.code === 0) {
             this.shortLinkForm.generated = res.data.short_link
-            this.shortLinkForm.activity_id = res.data.activity_id
+            // insert shortUrl to sms content
+            if (this.ruleForm.activity_id) {
+              this.ruleForm.content = this.ruleForm.content.replace(this.ruleForm.activity_url, this.shortLinkForm.generated)
+            } else {
+              this.ruleForm.content += this.shortLinkForm.generated
+            }
+            this.ruleForm.activity_id = res.data.activity_id
+            this.ruleForm.activity_url = res.data.short_link
             this.showShortTip = true
           }
-        })
+        }, 'isGenerating')
       },
       handleClick (tab) {
         console.log(tab, event)
       },
+      onSubmit (formName) {
+        this.$nextTick(() => {
+          this.submitForm(formName)
+        })
+      },
       submitForm (formName) {
         this.$refs[formName].validate((valid) => {
+          if (this.ruleForm.phone_type == 3 && this.contactIds.length == 0) {
+            this.$alert('请选择通讯录组', '创建失败')
+            return
+          }
           if (valid) {
             let sendForm = {
-              send_message: this.ruleForm.sign + this.ruleForm.content,
+              send_message: this.ruleForm.sign + this.ruleForm.content, // + this.shortLinkForm.generated,
               send_message_type: this.ruleForm.sendType,
-              send_message_time: parseInt(this.ruleForm.time.getTime() / 1000),
-              activity_id: this.shortLinkForm.activity_id,
+              send_message_time: this.ruleForm.sendType == 2 ? parseInt(this.ruleForm.time.getTime() / 1000) : '',
+              activity_id: this.ruleForm.activity_id,
               send_phone_manual: this.ruleForm.manualIpt,
               send_phone_up_file: this.uploadFile,
-              send_phone_list_file: this.contactFile,
-              check_notice: this.ruleForm.remind
+              send_phone_list_file: this.contactIds.join(), // this.contactFile,
+              check_notice: this.ruleForm.remind,
+              phone_type: this.ruleForm.phone_type,
+              // total_message: this.ruleForm.mobile_total * this.smsCount,
+              phone_count: this.ruleForm.mobile_total,
+              message_count: this.smsCount
             }
-            console.log(sendForm)
+            // console.log(sendForm)
             if (sendForm['send_phone_manual'] || sendForm['send_phone_up_file'] || sendForm['send_phone_list_file']) {
               this.requestPost(Services.messageSend, sendForm, (res) => {
+                this.$refs['ruleForm'].resetFields()
                 this.$alert('创建成功', '', {
                   callback: action => {
                     this.$router.push({name: 'list'})
@@ -633,32 +706,7 @@
     },
     components: {
       constant,
-      vLabel,
-      Icon,
-      elTabs: Tabs,
-      elDialog: Dialog,
-      elTabPane: TabPane,
-      elAlert: Alert,
-      elForm: Form,
-      elFormItem: FormItem,
-      elCheckbox: Checkbox,
-      MessageBox,
-      Message,
-      elRadio: Radio,
-      elCheckboxGroup: CheckboxGroup,
-      elSwitch: Switch,
-      elDatePicker: DatePicker,
-      elTimePicker: TimePicker,
-      elOption: Option,
-      elSelect: Select,
-      elRadioGroup: RadioGroup,
-      elRow: Row,
-      elTooltip: Tooltip,
-      elCol: Col,
-      elTree: Tree,
-      elInput: Input,
-      elButton: Button,
-      elUpload: Upload
+      vLabel
     }
   }
 </script>

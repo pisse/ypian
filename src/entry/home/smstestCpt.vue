@@ -8,7 +8,7 @@
 
     <div class="content">
       <div class="testcontent" >
-        【云片网】您的验证码是 <span>4421</span>
+        【智鼎网】您的验证码是 <span>4421</span>
       </div>
 
       <div class="mobilediv">

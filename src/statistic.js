@@ -4,8 +4,12 @@ import Vue from 'vue'
 import App from './entry/statistics'
 import router from './router/statistics'
 import VueResource from 'vue-resource'
+import ElementUI from 'element-ui'
 
+Vue.use(ElementUI)
 Vue.use(VueResource)
+
+import '../theme/index.css'
 import 'common/stylus/index.styl'
 
 Vue.config.productionTip = false

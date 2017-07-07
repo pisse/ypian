@@ -15,10 +15,18 @@ var statisticChart = {
       let type = data.type
       let yFormat = data.yFormat
       let max = data.max
+      let minY = data.minY
       let height = data.height
+      let marginTop = data.marginTop
       let marginLeft = data.marginLeft
       let marginRight = data.marginRight
-      console.log(ele)
+      let tickInterval = data.tickInterval
+      let tooltipSuffix = data.tooltipSuffix
+      let tickIntervalY = data.tickIntervalY
+      let minTickInterval = data.minTickInterval
+      let tickAmountY = data.tickAmountY
+      let minRangeY = data.minRangeY
+
       var options = {
         chart: {
           renderTo: ele,
@@ -27,9 +35,13 @@ var statisticChart = {
           plotBorderWidth: 0,
           plotShadow: false,
           animation: true,
+          marginTop: marginTop || 20,
           marginLeft: marginLeft || 80,
           marginRight: marginRight || 40,
           type: type || 'line'
+        },
+        lang: {
+          noData: '暂无数据'
         },
         legend: {
           align: 'center',
@@ -44,7 +56,7 @@ var statisticChart = {
             color: '#c9c9c9'
           }
         },
-        colors: ['#1c62b8', '#f6505c', '#2bb874', '#19b2b7', '#8673cd', '#f6c928'],
+        colors: ['#75c2fd', '#fd8f00', '#2bb874', '#19b2b7', '#8673cd', '#f6c928'],
         plotOptions: {
           pie: {
             allowPointSelect: true,
@@ -56,11 +68,14 @@ var statisticChart = {
           },
           line: {
             marker: {
-              fillColor: '#FFFFFF',
+              // fillColor: '#FFFFFF',
               lineWidth: 2,
               lineColor: null,
               symbol: 'circle'
             }
+          },
+          series: {
+            borderWidth: 0
           }
         },
         credits: {
@@ -80,10 +95,15 @@ var statisticChart = {
             enabled: false
           },
           max: max,
+          min: minY,
+          minRange: minRangeY,
+          tickInterval: tickIntervalY,
+          tickAmount: tickAmountY,
+          minTickInterval: minTickInterval,
           labels: {
             format: yFormat || '{value}',
             style: {
-              color: '#f6505c'
+              color: '#0e4bf4'
             }
           }
         }],
@@ -93,11 +113,13 @@ var statisticChart = {
             enabled: true
           },
           tickPosition: 'inside',
-          tickLength: 4,
+          // tickLength: 4,
+          tickInterval: tickInterval || 1,
           tickmarkPlacement: 'on'
         },
         tooltip: {
-          shared: true
+          shared: true,
+          valueSuffix: tooltipSuffix || ''
         },
         series: series
       }

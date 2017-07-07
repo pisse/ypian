@@ -114,13 +114,13 @@
 }
 
 .el-button:hover, .el-button:focus{
-    color: #20a0ff;
-    border-color: #20a0ff;
+    color: #75c2fd;
+    border-color: #75c2fd;
 }
 
 .el-button:active{
-    color: rgb(29, 144, 230);
-    border-color: rgb(29, 144, 230);
+    color: rgb(105, 175, 228);
+    border-color: rgb(105, 175, 228);
     outline: none;
 }
 
@@ -174,47 +174,47 @@
 }
 
 .el-button.is-active{
-    color: rgb(29, 144, 230);
-    border-color: rgb(29, 144, 230);
+    color: rgb(105, 175, 228);
+    border-color: rgb(105, 175, 228);
 }
 
 .el-button.is-plain{}
 
 .el-button.is-plain:hover, .el-button.is-plain:focus{
     background: #fff;
-    border-color: #20a0ff;
-    color: #20a0ff;
+    border-color: #75c2fd;
+    color: #75c2fd;
 }
 
 .el-button.is-plain:active{
     background: #fff;
-    border-color: rgb(29, 144, 230);
-    color: rgb(29, 144, 230);
+    border-color: rgb(105, 175, 228);
+    color: rgb(105, 175, 228);
     outline: none;
 }
 
 .el-button--primary{
     color: #fff;
-    background-color: #20a0ff;
-    border-color: #20a0ff;
+    background-color: #75c2fd;
+    border-color: #75c2fd;
 }
 
 .el-button--primary:hover, .el-button--primary:focus{
-    background: rgb(77, 179, 255);
-    border-color: rgb(77, 179, 255);
+    background: rgb(145, 206, 253);
+    border-color: rgb(145, 206, 253);
     color: #fff;
 }
 
 .el-button--primary:active{
-    background: rgb(29, 144, 230);
-    border-color: rgb(29, 144, 230);
+    background: rgb(105, 175, 228);
+    border-color: rgb(105, 175, 228);
     color: #fff;
     outline: none;
 }
 
 .el-button--primary.is-active{
-    background: rgb(29, 144, 230);
-    border-color: rgb(29, 144, 230);
+    background: rgb(105, 175, 228);
+    border-color: rgb(105, 175, 228);
     color: #fff;
 }
 
@@ -226,14 +226,14 @@
 
 .el-button--primary.is-plain:hover, .el-button--primary.is-plain:focus{
     background: #fff;
-    border-color: #20a0ff;
-    color: #20a0ff;
+    border-color: #75c2fd;
+    color: #75c2fd;
 }
 
 .el-button--primary.is-plain:active{
     background: #fff;
-    border-color: rgb(29, 144, 230);
-    color: rgb(29, 144, 230);
+    border-color: rgb(105, 175, 228);
+    color: rgb(105, 175, 228);
     outline: none;
 }
 
@@ -433,18 +433,18 @@
 
 .el-button--text{
     border: none;
-    color: #20a0ff;
+    color: #75c2fd;
     background: transparent;
     padding-left: 0;
     padding-right: 0;
 }
 
 .el-button--text:hover, .el-button--text:focus{
-    color: rgb(77, 179, 255);
+    color: rgb(145, 206, 253);
 }
 
 .el-button--text:active{
-    color: rgb(29, 144, 230);
+    color: rgb(105, 175, 228);
 }
 
 .el-button-group{
