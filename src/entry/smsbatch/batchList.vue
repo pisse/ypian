@@ -29,11 +29,16 @@
                        :width="column.width"
       >
         <template scope="scope">
-          <span v-if="scope.column.property !='total_message'">{{scope.row[scope.column.property]}}</span>
-          <div v-else>
+          <div v-if="scope.column.property == 'total_message'">
             {{scope.row['phone_count']}}/{{parseInt(scope.row['phone_count']) * parseInt(scope.row['message_count'])}}
             <el-button @click.prevent="messageDetail(scope.$index, scope.row)"  type="text" size="small" >详细</el-button>
           </div>
+          <div v-else-if="scope.column.property == 'status'">
+            {{scope.row[scope.column.property]}}
+            <br>
+            <el-progress v-if="scope.row.is_show" type="line" :percentage="scope.row.show_data" width="20"></el-progress>
+          </div>
+          <span v-else>{{scope.row[scope.column.property]}}</span>
         </template>
 
       </el-table-column>
@@ -206,9 +211,10 @@
         let msg = '提交: ' + (rowData.phone_count || 0) +
           // '，错误号码' + (rowData.error_message || 0) +
           '，黑名单: ' + (rowData.black_count || 0) +
-          '，未知错误: ' + (rowData.fail_count || 0) +
-          '，发送: ' + (parseInt((rowData.phone_count || 0)) - parseInt((rowData.black_count || 0)) - parseInt((rowData.fail_count || 0))) +
-          '，消耗条数: ' + (parseInt(rowData.phone_count) * parseInt(rowData.message_count) || 0)
+          '，失败条数: ' + (rowData.fail_count || 0) +
+          '，发送: ' + (rowData.success_count || 0) + // - parseInt((rowData.black_count || 0)) - parseInt((rowData.fail_count || 0))) +
+          '，排除条数:' + (rowData.already_count || 0) +
+          '，消耗条数: ' + (parseInt(rowData.success_count) * parseInt(rowData.message_count) || 0)
         this.activeDetail = msg
       },
       formatter (row, column) {

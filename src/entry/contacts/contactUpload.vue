@@ -11,7 +11,7 @@
                 :closable="false">
         </el-alert>-->
         <div class="new-btn">
-            <el-button @click="refres" type="primary" >刷新</el-button>
+            <el-button @click="refresh" type="primary" >刷新</el-button>
         </div>
         <br>
 
@@ -33,8 +33,8 @@
             <el-table-column
                     fixed="right"
                     label="操作">
-                <template scope="scope">
-                    <el-button size="small" @click="download(scope.$index, scope.row)">错误下载</el-button>
+                <template scope="scope" >
+                    <el-button v-if="scope.row.down_url" size="small" @click="download(scope.$index, scope.row)">错误下载</el-button>
                 </template>
             </el-table-column>
 
@@ -55,6 +55,7 @@
     mixins: [_request, _pagination],
     data () {
       return {
+        timer: null,
         tableData: [],
         columns: [
           {key: 'group_name', title: '通讯录组'},
@@ -64,11 +65,18 @@
       }
     },
     created () {
-      this.getList()
+      this.refresh()
     },
     methods: {
-      refres () {
+      refresh () {
+        if (this.timer) {
+          clearTimeout(this.timer)
+          this.timer = null
+        }
         this.getList()
+        this.timer = setTimeout(() => {
+          this.refresh()
+        }, 1000 * 60)
       },
       getList () {
         this.request(Services.uploadListTask, {}, (remoteData) => {
@@ -78,7 +86,7 @@
         })
       },
       download (index, rowData) {
-        location.href = rowData.down_url
+        location.href = rowData.down_url.slice(1)
       }
     },
     components: {

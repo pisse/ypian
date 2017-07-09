@@ -11,7 +11,7 @@
       <constant :opt="account"></constant>
       <br/>
       <v-button text="查询" :loading="isLoading" @search="search"></v-button>
-      <v-title text="短信到达率概览"></v-title>
+      <v-title text="短信发送状态概览"></v-title>
 
       <div class="charts-wrap">
         <div id="line"></div>
@@ -176,7 +176,7 @@
           tooltipSuffix: '%'
         }
         let lineObj = {
-          name: '实时到达率',
+          name: '实时发送状态',
           data: []
         }
         for (var k in data) {
@@ -204,10 +204,10 @@
             name: '成功',
             data: []
           },
-          /* recv_fail_total_rate: {
+          recv_fail_total_rate: {
             name: '失败',
             data: []
-          }, */
+          },
           recv_no_total_rate: {
             name: '未知',
             data: []
@@ -226,7 +226,7 @@
           ret.series.push(seriesOpt[t])
         }
         ret.title = this.formData['start_time'] + '-' + this.formData['end_time'] + ',' +
-                '总计短信接收成功率' + data['recv_success_rate'] + ',短信接收未知率 ' + data['recv_no_rate'] // ',短信接收失败率' + data['recv_fail_rate'] +
+                '总计短信接收成功率' + data['recv_success_rate'] + ',短信接收未知率 ' + data['recv_no_rate'] + ',短信接收失败率' + data['recv_fail_rate'] +
         // this.tableData = tableData
         this.drawLine(ret)
       }

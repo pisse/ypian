@@ -1,6 +1,6 @@
 <template>
   <div class="failed-reason-cpt cpt"  v-loading="isloading">
-    <div class="title"><a href="statistic.html#/fail">失败原因统计</a>
+    <div class="title"><a href="statistic.html#/fail">失败原因统计({{dateStart + '-' + dateEnd}})</a>
       <div class="dataType">
        <!-- <span class="week" :class="{'active': type=='week'}" @click="select('week')">周</span>
         <span class="linebar"></span>
@@ -86,11 +86,14 @@
   import statisticMixin from '../mixin/statistic'
 
   const dateFormat = 'YYYY-MM-DD'
+  const dateFormatDesc = 'MM/DD'
 
   export default {
     mixins: [statisticMixin],
     data () {
       return {
+        dateStart: moment().subtract(7, 'days').format(dateFormatDesc),
+        dateEnd: moment().subtract(1, 'days').format(dateFormatDesc),
         type: 'week',
         isloading: false,
         noData: true

@@ -9,7 +9,7 @@
         <a href="./smsrecord.html#/send">{{userInfo.total_message}}条</a>
       </div>
       <div class="item">
-        <span class="span2"></span>到达率
+        <span class="span2"></span>发送状态
       </div>
       <div class="data">
         <a href="./statistic.html#/arrive" class="rate">

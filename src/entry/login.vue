@@ -28,7 +28,7 @@
         <el-button type="primary" @click="submitForm('loginForm')">登录</el-button>
       </div>
       <div class="desc">
-        为您的每一条短信验证码负责
+        为您的每一条短信负责
       </div>
     </div>
     </div>
@@ -192,6 +192,7 @@
         }
         let params = {
           username: this.ruleForm['username'],
+          password: this.ruleForm['password'],
           mobile: this.ruleForm['mobile']
         }
 

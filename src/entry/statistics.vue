@@ -26,7 +26,7 @@ export default {
       userInfo: {},
       routers: [
         {name: 'send', label: '短信发送量'},
-        {name: 'arrive', label: '短信到达率'},
+        {name: 'arrive', label: '短信发送状态'},
         {name: 'fail', label: '短信失败原因'},
         {name: 'delay', label: '短信耗时'}
        /* {name: 'register', label: '注册成功率'},

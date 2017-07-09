@@ -11,7 +11,7 @@
           </el-row>
           <div class="charts">
             <smssend-cpt dataType="send" chartId="smsSend" name="短信发送量"></smssend-cpt>
-            <smssend-cpt dataType="arrive" chartId="smsRate" name="到达率统计"></smssend-cpt>
+            <smssend-cpt dataType="arrive" chartId="smsRate" name="短信发送状态"></smssend-cpt>
           </div>
         </div>
         <div class="rightContent fl">

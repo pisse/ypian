@@ -20,7 +20,7 @@
           <el-menu-item index="3-2"><a href="./compare.html">营销对比</a></el-menu-item>
         </el-submenu>-->
 
-        <el-menu-item index="3"><!--<i class="el-icon-menu"></i>--><i class="iconfont icon-yingxiao"></i><a href="./clickstat.html">营销分析</a></el-menu-item>
+        <el-menu-item index="3"><!--<i class="el-icon-menu"></i>--><i class="iconfont icon-yingxiao"></i><a href="./clickstat.html">点击率统计</a></el-menu-item>
 
         <el-menu-item index="4"><!--<i class="el-icon-menu"></i>--><i class="iconfont icon-tongxunlu-copy"></i><a href="./contacts.html">通讯录</a></el-menu-item>
 

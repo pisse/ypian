@@ -134,8 +134,9 @@
                   :on-remove="handleRemove"
                   :on-success="handleSuccessUpload"
                   :file-list="fileList">
+            <!--<el-button size="small" @click="downloadTemplate" type="primary">下载{{uploadType==1?'导入':'剔除导入'}}模板</el-button>-->
             <el-button size="small" type="primary">选取文件</el-button>
-            <div slot="tip" class="el-upload__tip">只能csv文件，且不超过50M</div>
+            <div slot="tip" class="el-upload__tip">只能csv、txt文件，每行一个手机号码，且不超过50M</div>
           </el-upload>
         </div>
 
@@ -183,6 +184,7 @@
           &:hover
             .operations
               display : inherit
+
     .contact-list
       .list-head
         border: 1px solid rgb(223, 230, 236)
@@ -445,6 +447,10 @@
           this.total = parseInt(remoteData.total)
         }, 'contacts')
       },
+      downloadTemplate () {
+        let url = '/file/template/' + (this.uploadType == 1 ? 'input_phone.txt' : 'delete_phone.txt')
+        location.href = url
+      },
       contactUploadValidate (formName) {
         this.$refs[formName].validate((valid) => {
           if (valid) {
@@ -550,7 +556,11 @@
             message: '请选择通讯录组'
           })
         } else {
-          window.location.href = Services.contactDownload + '?group_id=' + groupId
+          /* this.$message({
+            message: '请选择通讯录组'
+          }) */
+          // window.location.href = Services.contactDownload + '?group_id=' + groupId
+          this.$router.push('upload')
         }
       },
       append (store, data) {
@@ -578,7 +588,12 @@
 
         let foldIcon = node.expanded ? iconFoldOpen : iconFolderClose
         let icon = (node.childNodes.length > 0 || data.id === 0) ? foldIcon : iconDocument
-        return h('span', [
+        return h('span', {style: {
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          display: 'inline-block',
+          width: '200px'
+        }}, [
           h('span', [icon, node.label]),
           h('span', {
             class: {

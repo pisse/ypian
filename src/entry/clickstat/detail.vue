@@ -13,11 +13,11 @@
         <div id="line" ref="chartDiv"></div>
       </div>
 
-      <v-title text="点击量"></v-title>
+      <!--<v-title text="点击量"></v-title>
       <div class="record-list">
-        <!-- <div class="table-operations">
+        &lt;!&ndash; <div class="table-operations">
            <span class="download"><i class="iconfont icon-download"></i>导出数据</span>
-         </div>-->
+         </div>&ndash;&gt;
 
         <el-table
                 v-loading="isLoading"
@@ -36,17 +36,17 @@
         </el-table>
 
         <div class="mt15">
-          <!--<el-pagination
+          &lt;!&ndash;<el-pagination
                   @size-change="handleSizeChange"
                   @current-change="handleCurrentChange"
                   :current-page="currentPage"
                   :page-size="pageSize"
                   layout="total, prev, pager, next, jumper"
                   :total="total">
-          </el-pagination>-->
+          </el-pagination>&ndash;&gt;
         </div>
 
-      </div>
+      </div>-->
     </div>
   </div>
 </template>
@@ -156,7 +156,7 @@
           // this.tableData = remoteData.data
           // this.pageSize = remoteData.page_size
           this.drawChart(remoteData.data)
-          this.tableData = this.formatData(remoteData.data)
+          // this.tableData = this.formatData(remoteData.data)
           this.total = this.tableData.length
         })
       },
@@ -172,7 +172,7 @@
           categories: [],
           series: [],
           height: 500,
-          yFormat: '{value}条',
+          yFormat: '{value}',
           tickInterval: 6,
           minTickInterval: 1
         }

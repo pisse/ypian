@@ -3,11 +3,11 @@
     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
       <constant :opt="account"></constant>
       <br>
-      <v-label :opt="account2"></v-label>
+     <!-- <v-label :opt="account2"></v-label>-->
       <el-form-item label-width="130px" label="发送手机号:" prop="phone_type" class="form-number" >
         <el-radio-group v-model="ruleForm.phone_type" @change="sourceChange">
           <el-radio label="1">手动添加</el-radio>
-          <el-radio label="2">CSV导入</el-radio>
+          <el-radio label="2">TXT导入</el-radio>
           <el-radio label="3">通讯录导入</el-radio>
         </el-radio-group>
       </el-form-item>
@@ -17,7 +17,7 @@
           <div class="file-wrap">
             <div class="down-template">
               1. <el-button type="primary" size="small" @click="downloadTemplate">下载模板文件</el-button>
-              <span>填写手机号（还可填写变量）</span>
+              <span>（每行一个手机号码）</span>
             </div>
 
             <el-upload
@@ -83,14 +83,23 @@
           </el-tree>
         </div>
       </div>
+
+      <el-form-item label-width="130px" label="号码过滤 :" prop="filter_day" class="filters_days">
+          <el-select size="small" v-model="ruleForm.filter_day" placeholder="" @change="filterDayChange">
+              <el-option v-for="(item, idx) in filter_days" :label="item.label" :value="item.value" :key="idx"></el-option>
+          </el-select>
+          <span>{{filter_day_desc}}</span>
+      </el-form-item>
+
       <el-form-item label-width="130px" label="短信签名:" prop="sign">
         <el-select size="small" v-model="ruleForm.sign" placeholder="">
           <el-option v-for="(item, idx) in signInfo" :value="item" :key="idx"></el-option>
         </el-select>
       </el-form-item>
 
-      <el-form-item label-width="130px" label="启用营销分析:">
-        <el-switch on-text="" off-text="" v-model="ruleForm.isopenShortUrl"></el-switch>
+      <el-form-item label-width="130px" label="营销分析:">
+        <!--<el-switch on-text="" off-text=""  v-model="ruleForm.isopenShortUrl"></el-switch>-->
+        <el-button type="primary" @click="openShortLink">点击率统计</el-button>
       </el-form-item>
 
       <el-form-item label-width="130px"  label="发送内容:" prop="content">
@@ -104,7 +113,7 @@
                 </el-tooltip>
                 </span>
               <span v-if="ruleForm.activity_id" class="short-cut-link remove-link" @click="removeShortLink">移除短链</span>
-              <span class="short-cut-link" @click="openShortLink" v-show="ruleForm.isopenShortUrl">生成统计短链接</span>
+              <span class="short-cut-link" @click="openShortLink" >生成统计短链接</span>
           </div>
           <div class="phone-simulator">
             <div class="sms-content">
@@ -125,12 +134,6 @@
             </el-tabs>
           </div>-->
         </div>
-      </el-form-item>
-
-      <el-form-item label-width="130px" label="过滤天数 :" prop="filter_day">
-        <el-select size="small" v-model="ruleForm.filter_day" placeholder="">
-          <el-option v-for="(item, idx) in filter_days" :label="item.label" :value="item.value" :key="idx"></el-option>
-        </el-select>
       </el-form-item>
 
       <el-form-item label-width="130px" label="发送时间:" prop="sendType" class="form-number">
@@ -174,19 +177,19 @@
 
     </el-form>
 
-    <el-dialog title="生成统计短连接" v-model="dialogFormVisible" custom-class="short-link-dialog" size="small">
+    <el-dialog title="短信点击率分析" v-model="dialogFormVisible" custom-class="short-link-dialog" size="small">
       <div class="desc">
-        统计短链接服务帮您把长长的网址压缩，变成带统计功能的短链接。让您便于 控制短信长度，统计短信的点击量，更有助于优化短信发送时间、内容。 （本功能基于新浪微博短链接，智鼎不保证短链接可靠性）
+        群发活动中加入短链接，让您便于统计短信的点击率，对比不同活动的用户点击行为与效果。
       </div>
       <el-form :model="shortLinkForm" :rules="{}" ref="shortLinkForm">
         <el-form-item label="活动名称:" :label-width="formLabelWidth">
           <el-input size="small" v-model="shortLinkForm.name" placeholder="便于区分链接用途，20字以内" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="长链接（原网址）:" :label-width="formLabelWidth">
+        <el-form-item label="活动链接:" :label-width="formLabelWidth">
           <el-input size="small" v-model="shortLinkForm.url" placeholder="输入原网址，http/https开头" auto-complete="off"></el-input>
           <el-button size="small" type="primary" :loading="isGenerating" @click="genUrl">立即生成</el-button>
         </el-form-item>
-        <el-form-item label="生成的统计短连接:" :label-width="formLabelWidth">
+        <el-form-item label="统计链接:" :label-width="formLabelWidth">
           <el-input size="small" v-model="shortLinkForm.generated" placeholder="短连接未生成"  :disabled="!shortLinkForm.generated" auto-complete="off"></el-input>
         </el-form-item>
         <el-alert
@@ -235,6 +238,9 @@
         width: inherit
     .form-number
       margin-bottom : 0
+    .filters_days
+      .el-input__inner
+        width: 100px
     .textarea-block
       position :relative
       margin-left: 130px
@@ -255,6 +261,11 @@
         border-radius: 5px;
         .el-tree
           border : none
+          .el-tree-node__label
+            overflow: hidden
+            text-overflow: ellipsis
+            display: inline-block
+            width: 200px
       .manual-ipt
         .el-textarea__inner
           min-height: 110px
@@ -379,6 +390,7 @@
         userInfo: {},
         signInfo: [],
         filter_days: [{value: '0', label: '不过滤'}, {value: '1', label: '1天'}, {value: '3', label: '3天'}, {value: '7', label: '7天'}, {value: '30', label: '30天'}],
+        filter_day_desc: '（启用过滤功能将避免频繁发送短信给用户）',
         shortLinkForm: {
           name: '',
           url: '',
@@ -404,7 +416,7 @@
           total_message: 0,
           manualIpt: '',
           sendType: '1',
-          filter_day: '',
+          filter_day: '0',
           content: ''
         },
         manualIptErr: [],
@@ -492,7 +504,7 @@
         })
       },
       downloadTemplate () {
-        location.href = 'http://116.62.67.16/frontend/web/file/template/send_phone.csv'
+        location.href = location.host + '/file/template/send_phone.csv'
       },
       phoneCheck (phones) {
         let ret = {
@@ -547,10 +559,10 @@
         }
       },
       handleBeforeUpload (file) {
-        if (/\.csv$/.test(file.name)) {
+        if (/\.(csv|txt)$/.test(file.name)) {
           return true
         } else {
-          this.$alert('只能上传csv文件', '上传失败')
+          this.$alert('只能上传csv,txt文件', '上传失败')
           return false
         }
       },
@@ -617,6 +629,13 @@
         this.contactIds.splice(idx, 1)
         this.$refs.groupTree.setCheckedNodes(this.checkGroups)
       },
+      filterDayChange (day) {
+        if (day == 0) {
+          this.filter_day_desc = '（启用过滤功能将避免频繁发送短信给用户）'
+        } else {
+          this.filter_day_desc = '（最近' + day + '天发送过的用户，本次活动将不再发送）'
+        }
+      },
       contactChange (values) {
         console.log(values)
       },
@@ -634,14 +653,16 @@
           })
         }
       },
-      openShortLink () {
-        this.dialogFormVisible = true
-        this.showShortTip = false
-        // this.resetForm('shortLinkForm')
-        this.shortLinkForm.name = ''
-        this.shortLinkForm.url = ''
-        this.shortLinkForm.generated = ''
-        // this.shortLinkForm.activity_id = ''
+      openShortLink (val) {
+        if (val) {
+          this.dialogFormVisible = true
+          this.showShortTip = false
+          // this.resetForm('shortLinkForm')
+          this.shortLinkForm.name = ''
+          this.shortLinkForm.url = ''
+          this.shortLinkForm.generated = ''
+          // this.shortLinkForm.activity_id = ''
+        }
       },
       removeShortLink () {
         this.shortLinkForm.name = ''
@@ -654,7 +675,8 @@
       },
       genUrl () {
         this.isGenerating = true
-        this.requestPost(Services.messageCreateShort, {title: this.shortLinkForm.name, long_url: this.shortLinkForm.url}, (res) => {
+        let url = this.shortLinkForm.url.indexOf('http://') == -1 ? ('http://' + this.shortLinkForm.url) : this.shortLinkForm.url
+        this.requestPost(Services.messageCreateShort, {title: this.shortLinkForm.name, long_url: url}, (res) => {
           this.isGenerating = false
           if (res.code === 0) {
             this.shortLinkForm.generated = res.data.short_link
