@@ -11,7 +11,7 @@
                 :closable="false">
         </el-alert>-->
         <div class="new-btn">
-            <el-button @click="refres" type="primary" icon="plus">刷新</el-button>
+            <el-button @click="refres" type="primary" >刷新</el-button>
         </div>
         <br>
 
@@ -28,6 +28,14 @@
                              :label="column.title"
                              :width="column.width"
             >
+            </el-table-column>
+
+            <el-table-column
+                    fixed="right"
+                    label="操作">
+                <template scope="scope">
+                    <el-button size="small" @click="download(scope.$index, scope.row)">错误下载</el-button>
+                </template>
             </el-table-column>
 
 
@@ -50,7 +58,8 @@
         tableData: [],
         columns: [
           {key: 'group_name', title: '通讯录组'},
-          {key: 'type', title: '类型'}, {key: 'status', title: '状态'}, {key: 'created_at', title: '创建时间', width: '180px'}
+          {key: 'type', title: '类型'}, {key: 'status', title: '状态'},
+          {key: 'created_at', title: '创建时间', width: '180px'}
         ]
       }
     },
@@ -67,6 +76,9 @@
           // this.pageSize = remoteData.page_size
           // this.total = parseInt(remoteData.data.total)
         })
+      },
+      download (index, rowData) {
+        location.href = rowData.down_url
       }
     },
     components: {

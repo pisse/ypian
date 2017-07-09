@@ -27,6 +27,9 @@
         </el-form>
         <el-button type="primary" @click="submitForm('loginForm')">登录</el-button>
       </div>
+      <div class="desc">
+        为您的每一条短信验证码负责
+      </div>
     </div>
     </div>
     <div class="footer">
@@ -35,9 +38,13 @@
   </div>
 </template>
 <style lang="stylus" rel="stylesheet/stylus">
+  .login
+    background-color :#f6f6f6
   .login-wrap
     background-color : #f6f6f6
+    padding-top: 30px
     .login-container
+      position :relative
       width: 1200px
       height: 420px
       background-image : url('../assets/Login.png')
@@ -78,6 +85,12 @@
           padding: 20px 0;
           font-size: 18px;
 
+      .desc
+        position :absolute
+        color: #fff
+        font-size : 30px
+        left: 70px
+        top: 165px
   .footer
     position : fixed
     height: 60px
@@ -88,6 +101,7 @@
     text-align :center
     color: #999999
     font-size : 14px
+    background-color :#fff
 </style>
 <script type="text/ecmascript-6">
   import Vue from 'vue'

@@ -62,7 +62,7 @@
           <span  v-if="ruleForm.phone_type==2">当前上传文件为： {{uploadShowFile}}</span>
           <span  v-if="ruleForm.phone_type==3">当前选中通讯录发送<!--{{selectedGroup.name}}，-->{{contactShowTip}}</span>
           <el-tooltip placement="bottom">
-            <div slot="content">系统对上传的手机号做了自动去重和去除错误手机号，<br>剩下的是有效手机号，最少1个,建议10万个以内</div>
+            <div slot="content">系统对上传的手机号做了自动去重和去除错误手机号<!--，<br>剩下的是有效手机号，最少1个,建议10万个以内--></div>
             <i class="iconfont icon-icon-question"></i>
           </el-tooltip>
         </div>
@@ -83,10 +83,14 @@
           </el-tree>
         </div>
       </div>
-      <el-form-item label-width="130px" label="短信签名 :" prop="sign">
+      <el-form-item label-width="130px" label="短信签名:" prop="sign">
         <el-select size="small" v-model="ruleForm.sign" placeholder="">
           <el-option v-for="(item, idx) in signInfo" :value="item" :key="idx"></el-option>
         </el-select>
+      </el-form-item>
+
+      <el-form-item label-width="130px" label="启用营销分析:">
+        <el-switch on-text="" off-text="" v-model="ruleForm.isopenShortUrl"></el-switch>
       </el-form-item>
 
       <el-form-item label-width="130px"  label="发送内容:" prop="content">
@@ -100,7 +104,7 @@
                 </el-tooltip>
                 </span>
               <span v-if="ruleForm.activity_id" class="short-cut-link remove-link" @click="removeShortLink">移除短链</span>
-              <span class="short-cut-link" @click="openShortLink">生成统计短链接</span>
+              <span class="short-cut-link" @click="openShortLink" v-show="ruleForm.isopenShortUrl">生成统计短链接</span>
           </div>
           <div class="phone-simulator">
             <div class="sms-content">
@@ -121,6 +125,12 @@
             </el-tabs>
           </div>-->
         </div>
+      </el-form-item>
+
+      <el-form-item label-width="130px" label="过滤天数 :" prop="filter_day">
+        <el-select size="small" v-model="ruleForm.filter_day" placeholder="">
+          <el-option v-for="(item, idx) in filter_days" :label="item.label" :value="item.value" :key="idx"></el-option>
+        </el-select>
       </el-form-item>
 
       <el-form-item label-width="130px" label="发送时间:" prop="sendType" class="form-number">
@@ -237,7 +247,8 @@
         position : absolute
         left: 450px
         top: 0
-        max-height : 200px
+        max-height: 320px
+        min-height: 110px
         width: 360px
         overflow: auto;
         border: 1px solid rgb(191, 203, 217);
@@ -367,6 +378,7 @@
       return {
         userInfo: {},
         signInfo: [],
+        filter_days: [{value: '0', label: '不过滤'}, {value: '1', label: '1天'}, {value: '3', label: '3天'}, {value: '7', label: '7天'}, {value: '30', label: '30天'}],
         shortLinkForm: {
           name: '',
           url: '',
@@ -384,6 +396,7 @@
           name: '',
           sign: '',
           remind: '1',
+          isopenShortUrl: false,
           time: '',
           delivery: false,
           phone_type: '1',
@@ -391,6 +404,7 @@
           total_message: 0,
           manualIpt: '',
           sendType: '1',
+          filter_day: '',
           content: ''
         },
         manualIptErr: [],
@@ -429,6 +443,7 @@
           sign: [
             // {required: true, message: '请选择签名', trigger: 'change'}
           ],
+          filter_day: [],
           time: [
             {type: 'date', required: true, message: '请选择日期', trigger: 'blur'}
           ],
@@ -594,7 +609,7 @@
           // this.showGroupDialog(res.data)
           // this.contactFile = res.data.file
           this.contactShowTip = '，共导入' + this.contactIds.length + '个组，' + res.data.total + '个号码' // + ',成功:' + res.data.success + ',失败:' + res.data.fail
-          // this.ruleForm.mobile_total = res.data.success || 0
+          this.ruleForm.mobile_total = res.data.total || 0
         })
       },
       removeContact (idx) {
@@ -682,6 +697,7 @@
               phone_type: this.ruleForm.phone_type,
               // total_message: this.ruleForm.mobile_total * this.smsCount,
               phone_count: this.ruleForm.mobile_total,
+              filter_day: this.ruleForm.filter_day,
               message_count: this.smsCount
             }
             // console.log(sendForm)

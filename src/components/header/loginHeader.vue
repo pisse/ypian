@@ -1,15 +1,19 @@
 <template>
-  <div class="header">
-      <span class="logo"></span>
-      <p class="company">
-          <a href="http://www.q1069.com/">首页</a>
-          <a href="http://www.q1069.com/index.php?m=content&c=index&a=lists&catid=2">产品中心</a>
-          <a href="http://www.q1069.com/index.php?m=content&c=index&a=lists&catid=5">关于我们</a>
-      </p>
-  </div>
+   <div class="header-wrap">
+      <div class="header">
+          <span class="logo"></span>
+          <p class="company">
+              <a href="http://www.q1069.com/">首页</a>
+              <a href="http://www.q1069.com/index.php?m=content&c=index&a=lists&catid=2">产品中心</a>
+              <a href="http://www.q1069.com/index.php?m=content&c=index&a=lists&catid=5">关于我们</a>
+          </p>
+      </div>
+   </div>
 </template>
 <style lang="stylus" rel="stylesheet/stylus">
 
+  .header-wrap
+    background-color :#fff
   .header
     width: 1200px
     height: 100px
