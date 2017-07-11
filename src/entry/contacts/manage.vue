@@ -312,6 +312,11 @@
         return this.selectedContactList.length === 1
       }
     },
+    beforeRouteEnter (to, from, next) {
+      next(vm => {
+        vm.$emit('routeChange', vm.$route.name)
+      })
+    },
     watch: {
       selectedGroup (newGroup, oldGroup) {
         if (newGroup['id'] !== oldGroup['id']) {
@@ -560,7 +565,12 @@
             message: '请选择通讯录组'
           }) */
           // window.location.href = Services.contactDownload + '?group_id=' + groupId
-          this.$router.push('upload')
+          this.request(Services.contactDownload, {group_id: groupId}, (remoteData) => {
+            this.$message({
+              message: remoteData.message
+            })
+            this.$router.push('upload')
+          })
         }
       },
       append (store, data) {

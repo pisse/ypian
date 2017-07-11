@@ -64,6 +64,11 @@
         ]
       }
     },
+    beforeRouteEnter (to, from, next) {
+      next(vm => {
+        vm.$emit('routeChange', vm.$route.name)
+      })
+    },
     created () {
       this.refresh()
     },

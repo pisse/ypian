@@ -84,7 +84,7 @@
         </div>
       </div>
 
-      <el-form-item label-width="130px" label="号码过滤 :" prop="filter_day" class="filters_days">
+      <el-form-item label-width="130px" label="智能过滤 :" prop="filter_day" class="filters_days">
           <el-select size="small" v-model="ruleForm.filter_day" placeholder="" @change="filterDayChange">
               <el-option v-for="(item, idx) in filter_days" :label="item.label" :value="item.value" :key="idx"></el-option>
           </el-select>
@@ -679,7 +679,8 @@
         this.requestPost(Services.messageCreateShort, {title: this.shortLinkForm.name, long_url: url}, (res) => {
           this.isGenerating = false
           if (res.code === 0) {
-            this.shortLinkForm.generated = res.data.short_link
+            let short_url = res.data.short_link.replace(/^http(s?):\/\//, '')
+            this.shortLinkForm.generated = short_url
             // insert shortUrl to sms content
             if (this.ruleForm.activity_id) {
               this.ruleForm.content = this.ruleForm.content.replace(this.ruleForm.activity_url, this.shortLinkForm.generated)
@@ -687,7 +688,7 @@
               this.ruleForm.content += this.shortLinkForm.generated
             }
             this.ruleForm.activity_id = res.data.activity_id
-            this.ruleForm.activity_url = res.data.short_link
+            this.ruleForm.activity_url = short_url
             this.showShortTip = true
           }
         }, 'isGenerating')

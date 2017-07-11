@@ -219,6 +219,7 @@
           title: '',
           categories: [],
           minTickInterval: 1,
+          marginTop: 50,
           series: []
         }
         let lineObj = {

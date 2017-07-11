@@ -4,11 +4,11 @@
     <div class="mainContainer">
       <side-menu defautActive="4"></side-menu>
       <div class="right clearfix">
-        <tabs :routers="routers"></tabs>
+        <tabs :routers="routers"  ref="tabs"></tabs>
 
         <!-- 路由出口 -->
         <!-- 路由匹配到的组件将渲染在这里 -->
-        <router-view></router-view>
+        <router-view @routeChange="routeChange"></router-view>
 
       </div>
     </div>
@@ -30,6 +30,11 @@ export default {
   data () {
     return {
       routers: [{name: 'contacts', label: '通讯录管理'}, {name: 'upload', label: '通讯录导入导出任务'}]
+    }
+  },
+  methods: {
+    routeChange (name) {
+      this.$refs.tabs.routerName = name
     }
   },
   components: {

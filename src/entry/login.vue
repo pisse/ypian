@@ -11,7 +11,7 @@
             <el-input v-model="ruleForm.username" @change="checkVcode"></el-input>
           </el-form-item>
           <el-form-item label="密码" prop="password">
-            <el-input type="password" v-model="ruleForm.password" @keyup.13.native="submitForm('loginForm')"></el-input>
+            <el-input type="password" v-model="ruleForm.password" auto-complete="off" @keyup.13.native="submitForm('loginForm')"></el-input>
           </el-form-item>
 
           <template  v-if="is_captcha">
@@ -159,6 +159,9 @@
           ]
         }
       }
+    },
+    created () {
+      this.checkVcode()
     },
     methods: {
       submitForm (formName) {
