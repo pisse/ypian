@@ -7,7 +7,7 @@ let Services = {
   // 控制台
   controlTodayData: Domain + 'data/home',
   // 用户
-  userLogin: Domain + 'user/login',
+  userLogin: Domain + 'user/login-new',
   checkVcode: Domain + 'user/ver-captcha',
   getVcode: Domain + 'user/send-captcha',
   userLoginOut: Domain + 'user/login-out',
