@@ -8,9 +8,9 @@
 
         <!-- 路由出口 -->
         <!-- 路由匹配到的组件将渲染在这里 -->
-       <!-- <keep-alive>-->
+        <keep-alive>
           <router-view :userInfo="userInfo" :tabs="routers"></router-view>
-       <!-- </keep-alive>-->
+        </keep-alive>
       </div>
     </div>
   </div>
@@ -26,7 +26,7 @@ export default {
   data () {
     return {
       userInfo: {},
-      routers: [{name: 'list', label: '群发申请'}, {name: 'new', label: '新建群发计划', show: false}]
+      routers: [{name: 'list', label: '群发申请'}, {name: 'new', label: '新建群发计划', show: false}, {name: 'taskdetail', label: '任务明细', show: false}]
     }
   },
  /* beforeRouteEnter (to, from, next) {

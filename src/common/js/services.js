@@ -47,6 +47,7 @@ let Services = {
   messageSend: Domain + 'message/send-msg',
   messageRecord: Domain + 'message/record-list',
   messageRecordReply: Domain + 'message/reply-list',
+  messageRecordDetail: Domain + 'message/record-detail',
 
   // 发送任务
   messageList: Domain + 'message/list',

@@ -46,6 +46,7 @@
       <el-table-column
               label="操作">
         <template scope="scope">
+          <el-button size="small" @click="taskDetail(scope.$index, scope.row)">任务明细</el-button>
           <el-button size="small" @click="clickDetail(scope.$index, scope.row)" v-if="scope.row.status == '4' && scope.row.activity_id !='' ">发送效果</el-button>
         </template>
       </el-table-column>
@@ -157,7 +158,9 @@
     beforeRouteEnter (to, from, next) {
       next(vm => {
         vm.tabs.forEach((v, i) => {
-          if (v['name'] == 'new') {
+          if (v['name'] == 'list') {
+            v['show'] = true
+          } else {
             v['show'] = false
           }
         })
@@ -184,10 +187,14 @@
     },
     methods: {
       goNew () {
-        this.tabs.forEach((v, i) => {
+        /* this.tabs.forEach((v, i) => {
           v['show'] = true
-        })
+        }) */
         this.$router.push({name: 'new'})
+      },
+      taskDetail (idx, rowData) {
+        let activity_id = rowData.id
+        this.$router.push({name: 'taskdetail', query: { id: activity_id }})
       },
       clickDetail (idx, rowData) {
         let activity_id = rowData.activity_id

@@ -469,8 +469,13 @@
     beforeRouteEnter (to, from, next) {
       next(vm => {
         vm.tabs.forEach((v, i) => {
-          v['show'] = true
+          if (v['name'] == 'taskdetail') {
+            v['show'] = false
+          } else {
+            v['show'] = true
+          }
         })
+        vm.getUserInfo()
       })
     },
     props: {
@@ -491,7 +496,7 @@
       }
     },
     created () {
-      this.getUserInfo()
+      // this.getUserInfo()
     },
     methods: {
       getUserInfo () {

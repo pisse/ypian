@@ -81,10 +81,11 @@
       return {
         multipleSelection: [],
         columns: [
+          {key: 'op_submit_time', title: '发送时间', width: '180px'},
+          {key: 'msg_content', title: '内容', width: '200px'},
+          {key: 'ap_fee_count', title: '计费条数'},
           {key: 'mobile', title: '手机号'},
-          {key: 'status_text', title: '接收状态'},
-          {key: 'msg_content', title: '内容', width: '200px'}, {key: 'ap_fee_count', title: '计费条数'},
-          {key: 'op_submit_time', title: '发送时间', width: '180px'}
+          {key: 'status_text', title: '接收状态'}
         ],
         tableData: [],
         account: {name: '账户名', value: ''},
