@@ -85,7 +85,8 @@
           {key: 'msg_content', title: '内容', width: '200px'},
           {key: 'ap_fee_count', title: '计费条数'},
           {key: 'mobile', title: '手机号'},
-          {key: 'status_text', title: '接收状态'}
+          {key: 'status_text', title: '接收状态'},
+          {key: 'stat_text', title: '错误信息'}
         ],
         tableData: [],
         account: {name: '账户名', value: ''},
