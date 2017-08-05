@@ -75,8 +75,8 @@
         let type = this.type
         let num = type == 'week' ? 7 : 30
         let params = {
-          start_time: '2017-07-28', // moment().subtract(num, 'days').format(dateFormat),
-          end_time: '2017-08-03' // moment().subtract(1, 'days').format(dateFormat)
+          start_time: moment().subtract(num, 'days').format(dateFormat),
+          end_time: moment().subtract(1, 'days').format(dateFormat)
         }
         this.isLoading = true
         let url = this.dataType == 'send' ? Services.dataHistoryeSend : Services.dataHistoryeArrive
