@@ -58,7 +58,7 @@
             v-model="dialogVisible"
             size="small"
             >
-      <span>发送计划已生成，<br><br>{{activeDetail}}</span>
+      <span>发送计划已生成，{{sendTime}}<br><br>{{activeDetail}}</span>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
       </span>
@@ -114,6 +114,7 @@
       return {
         dialogVisible: false,
         activeDetail: '',
+        sendTime: '',
         isLoading: false,
         tableData: [],
         columns: [
@@ -182,7 +183,7 @@
       }
     },
     created () {
-      console.log(this.userInfo)
+      // console.log(this.userInfo)
       // this.getList()
     },
     methods: {
@@ -222,11 +223,16 @@
           '，发送: ' + (rowData.success_count || 0) + // - parseInt((rowData.black_count || 0)) - parseInt((rowData.fail_count || 0))) +
           '，排除条数:' + (rowData.already_count || 0) +
           '，消耗条数: ' + (parseInt(rowData.success_count) * parseInt(rowData.message_count) || 0)
+        if (rowData.send_message_type == '定时发送') {
+          this.sendTime = '预定发送时间：' + moment(new Date((rowData.send_message_time + 0) * 100)).format(dateFormat)
+        } else {
+          this.sendTime = ''
+        }
         this.activeDetail = msg
       },
       formatter (row, column) {
         if (column['property'] === 'total_message') {
-          console.log(row, column)
+          // console.log(row, column)
           return row['total_message'] + '/' + row['total_success_message']
         } else {
           return row[column['property']]
