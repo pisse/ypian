@@ -7,7 +7,7 @@
         <div class="contact-group">
 
         <div class="group-head">
-          <el-button type="primary" icon="plus" size="small" @click="modifyType=1;dialogGroupModifyVisible=true">新增</el-button>
+          <el-button type="primary" icon="plus" size="small" @click="modifyType=1;dialogGroupModifyVisible=true">添加</el-button>
         </div>
         <div class="contact-group-list" >
           <el-tree
@@ -30,7 +30,7 @@
         <div class="contact-list">
         <div class="list-head">
           <v-input :formData="searchForm" :opt="mobile" class="mobile-search" @icon_click="searchContact"></v-input>
-          <el-button type="primary" icon="plus" size="small" @click="dialogContactModifyVisible=true">新增</el-button>
+          <el-button type="primary" icon="plus" size="small" @click="dialogContactModifyVisible=true">添加</el-button>
           <el-button type="primary" icon="edit" size="small" @click="modifyContact" :disabled="!isContactModifyEnable">修改</el-button>
           <el-button type="primary" icon="delete" size="small" @click="deleteContact" :disabled="!isContactDeleteEnable">删除</el-button>
           <el-button type="primary" icon="upload2" size="small" @click="uploadType=1;dialogContactUploadVisible=true">导入</el-button>
@@ -78,7 +78,7 @@
       </el-col>
 
     </el-row>
-    <el-dialog :title="modifyType==1 ? '新建通讯录组': modifyType==2 ? '修改组名': '复制通讯录'" v-model="dialogGroupModifyVisible" size="tiny" >
+    <el-dialog :title="modifyType==1 ? '添加通讯录组': modifyType==2 ? '修改组名': '复制通讯录'" v-model="dialogGroupModifyVisible" size="tiny" >
       <el-form :model="groupForm" :rules="newGroupRules" ref="groupModify"  v-loading="isLoading">
         <el-form-item label="组名" label-width="60px" prop="name">
           <el-input v-model="groupForm.name" auto-complete="off"></el-input>
@@ -90,7 +90,7 @@
       </div>
     </el-dialog>
 
-    <el-dialog :title="contactModifyType==1 ? '新建通讯录': '修改通讯录'" v-model="dialogContactModifyVisible" custom-class="contact-dialog">
+    <el-dialog :title="contactModifyType==1 ? '添加通讯录': '修改通讯录'" v-model="dialogContactModifyVisible" custom-class="contact-dialog">
       <el-form :model="contactForm" :rules="contactRules" ref="contactModify"  v-loading="isLoading" label-width="100px">
         <el-form-item label="通讯录组" prop="group_id">
           <el-select v-model="contactForm.group_id" placeholder="请选择通讯录组" >

@@ -509,7 +509,7 @@
         })
       },
       downloadTemplate () {
-        location.href = location.host + '/file/template/send_phone.csv'
+        location.href = 'http://sms.q1069.com/file/template/send_phone.csv'
       },
       phoneCheck (phones) {
         let ret = {
@@ -517,10 +517,11 @@
           validPhones: []
         }
         for (var i = 0; i < phones.length; i++) {
-          if (phones[i] && !(/^1[34578]\d{9}$/.test(phones[i]))) {
-            ret['errPhones'].push(phones[i])
+          let mobile = _.trim(phones[i])
+          if (mobile && !(/^1[34578]\d{9}$/.test(mobile))) {
+            ret['errPhones'].push(mobile)
           } else {
-            phones[i] && ret['validPhones'].push(phones[i])
+            mobile && ret['validPhones'].push(mobile)
           }
         }
         ret['validPhones'] = _.uniq(ret['validPhones'])

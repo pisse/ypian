@@ -29,7 +29,7 @@
   .search-bar
     .date-time-wrap
       display : inline-block
-      min-width : 200px
+      min-width : 193px
     .date-time-desc
       color: #999
       font-size : 12px

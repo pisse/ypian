@@ -3,7 +3,7 @@
     <div class="search-box">
       <constant :opt="account"></constant>
       <br/>
-      <date-picker :formData="formData" :isRange="false" :opt="dataRange" type="date" dateFormat="yyyy-MM-dd"></date-picker>
+      <date-picker :formData="formData" :isRange="true" :opt="dataRange" type="date" dateFormat="yyyy-MM-dd"></date-picker>
        <v-input :formData="formData" :opt="mobile"></v-input>
       <br/>
      <!-- <v-select :formData="formData" ref="status" :opt="status"></v-select>
@@ -89,7 +89,7 @@
         account: {name: '账户名', value: ''},
         dataRange: {
           name: '起止时间',
-          keyStart: 'time',
+          keyStart: 'start_time',
           keyEnd: 'end_time',
           desc: '可查询三个月内记录'
         },
@@ -118,7 +118,7 @@
         formData: {
           status: '',
           mobile: '',
-          time: moment().subtract(2, 'days').hour(0).minute(0).second(0).format(dateFormat),
+          start_time: moment().subtract(2, 'days').hour(0).minute(0).second(0).format(dateFormat),
           end_time: moment().hour(23).minute(59).second(59).format(dateFormat)
         }
       }
@@ -144,8 +144,8 @@
       getList () {
         let params = Object.assign({}, this.formData)
         params['page'] = this.currentPage
-        params['time'] = moment(params['time']).format(dateFormat)
-        // params['end_time'] = moment(params['end_time']).format(dateFormat)
+        params['start_time'] = moment(params['start_time']).format(dateFormat)
+        params['end_time'] = moment(params['end_time']).format(dateFormat)
 
         this.request(Services.messageRecordReply, params, (remoteData) => {
           this.tableData = remoteData.data.list

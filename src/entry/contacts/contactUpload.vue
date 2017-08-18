@@ -34,7 +34,7 @@
                     fixed="right"
                     label="操作">
                 <template scope="scope" >
-                    <el-button v-if="scope.row.down_url" size="small" @click="download(scope.$index, scope.row)">错误下载</el-button>
+                    <el-button v-if="scope.row.down_url" size="small" @click="download(scope.$index, scope.row)">下载</el-button>
                 </template>
             </el-table-column>
 
