@@ -46,8 +46,11 @@ let Services = {
   messageCreateShort: Domain + 'short-link/create-activity',
   messageSend: Domain + 'message/send-msg',
   messageRecord: Domain + 'message/record-list',
+  downloadMessageRecord: Domain + 'output/record-list-out',
   messageRecordReply: Domain + 'message/reply-list',
   messageRecordDetail: Domain + 'message/record-detail',
+  downloadRecordDetail: Domain + 'output/record-detail-out',
+  downloadList: Domain + 'output/output-list',
 
   // 发送任务
   messageList: Domain + 'message/list',

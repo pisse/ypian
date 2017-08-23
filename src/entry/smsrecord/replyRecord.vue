@@ -3,7 +3,7 @@
     <div class="search-box">
       <constant :opt="account"></constant>
       <br/>
-      <date-picker :formData="formData" :isRange="true" :opt="dataRange" type="date" dateFormat="yyyy-MM-dd"></date-picker>
+      <date-picker :formData="formData" :isRange="true" :opt="dataRange" type="datetime" dateFormat="yyyy-MM-dd HH:mm:ss"></date-picker>
        <v-input :formData="formData" :opt="mobile"></v-input>
       <br/>
      <!-- <v-select :formData="formData" ref="status" :opt="status"></v-select>
@@ -73,7 +73,7 @@
   import _pagination from '../mixin/pagination'
   // Vue.use(Loading.directive)
 
-  const dateFormat = 'YYYY-MM-DD'
+  const dateFormat = 'YYYY-MM-DD HH:mm:ss'
   export default {
     mixins: [_request, _pagination],
     data () {
@@ -118,7 +118,7 @@
         formData: {
           status: '',
           mobile: '',
-          start_time: moment().subtract(2, 'days').hour(0).minute(0).second(0).format(dateFormat),
+          start_time: moment().hour(0).minute(0).second(0).format(dateFormat),
           end_time: moment().hour(23).minute(59).second(59).format(dateFormat)
         }
       }

@@ -27,6 +27,13 @@
                            :width="column.width"
           ></el-table-column>
 
+          <el-table-column
+              label="操作">
+            <template scope="scope">
+              <el-button size="small" @click="download(scope.$index, scope.row)">下载</el-button>
+            </template>
+          </el-table-column>
+
         </el-table>
 
         <div class="block">
@@ -159,6 +166,18 @@
           this.tableData = remoteData.data.list
           // this.pageSize = remoteData.page_size
           this.total = parseInt(remoteData.data.total)
+        })
+      },
+      download (idx, rowData) {
+        let params = Object.assign({}, this.formData)
+        params['page'] = this.currentPage
+        params['start_time'] = moment(params['start_time']).format(dateFormat)
+        params['end_time'] = moment(params['end_time']).format(dateFormat)
+
+        this.request(Services.downloadMessageRecord, params, (remoteData) => {
+          this.$message({
+            message: remoteData.message
+          })
         })
       }
     },

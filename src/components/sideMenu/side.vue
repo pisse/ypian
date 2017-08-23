@@ -29,6 +29,8 @@
           <el-menu-item index="5-1"><a href="./financial.html">日账单</a></el-menu-item>
         </el-submenu>
 
+        <el-menu-item index="6"><!--<i class="el-icon-menu"></i>--><i class="el-icon-caret-bottom"></i><a href="./downloads.html">下载任务</a></el-menu-item>
+
       </el-menu>
     </nav>
   </div>

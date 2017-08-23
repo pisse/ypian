@@ -47,6 +47,7 @@
               label="操作">
         <template scope="scope">
           <el-button size="small" @click="taskDetail(scope.$index, scope.row)">任务明细</el-button>
+          <el-button size="small" @click="download(scope.$index, scope.row)">下载</el-button>
           <el-button size="small" @click="clickDetail(scope.$index, scope.row)" v-if="scope.row.status == '4' && scope.row.activity_id !='' ">发送效果</el-button>
         </template>
       </el-table-column>
@@ -211,6 +212,13 @@
           this.tableData = remoteData.data.list
           // this.pageSize = remoteData.page_size
           this.total = parseInt(remoteData.data.total)
+        })
+      },
+      download (idx, rowData) {
+        this.request(Services.downloadRecordDetail, {task_id: rowData.id}, (remoteData) => {
+          this.$message({
+            message: remoteData.message
+          })
         })
       },
       messageDetail (idx, rowData) {
