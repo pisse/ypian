@@ -2,7 +2,7 @@
   <div class="main">
     <ui-header @user_info="setUserInfo"></ui-header>
     <div class="mainContainer">
-      <side-menu defautActive="3"></side-menu>
+      <side-menu defautActive="3" :userInfo="userInfo"></side-menu>
       <div class="right clearfix">
 
         <tabs :routers="routers" ref="tabs"></tabs>

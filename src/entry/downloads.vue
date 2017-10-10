@@ -1,8 +1,8 @@
 <template>
     <div class="main contacts">
-        <ui-header></ui-header>
+        <ui-header @user_info="setUserInfo"></ui-header>
         <div class="mainContainer">
-            <side-menu defautActive="6"></side-menu>
+            <side-menu defautActive="6" :userInfo="userInfo"> </side-menu>
             <div class="right clearfix">
                 <tabs :routers="routers"  ref="tabs"></tabs>
 
@@ -29,12 +29,16 @@
     name: 'contacts',
     data () {
       return {
+        userInfo: {},
         routers: [{name: 'list', label: '下载列表'}]
       }
     },
     methods: {
       routeChange (name) {
         this.$refs.tabs.routerName = name
+      },
+      setUserInfo (info) {
+        this.userInfo = info
       }
     },
     components: {

@@ -9,7 +9,7 @@
         <el-menu-item index="1"><i class="el-icon-menu"></i><a href="./main.html">管理控制台</a></el-menu-item>
         <el-submenu index="2">
           <template slot="title"><i class="el-icon-message"></i>国内短信</template>
-            <el-menu-item index="2-1"><a href="./smsbatch.html">短信群发</a></el-menu-item>
+            <el-menu-item index="2-1"  v-if="userInfo.is_send_mass =='0'"><a href="./smsbatch.html">短信群发</a></el-menu-item>
             <el-menu-item index="2-2"><a href="./smsrecord.html">短信记录</a></el-menu-item>
             <el-menu-item index="2-3"><a href="./statistic.html">数据统计</a></el-menu-item>
         </el-submenu>
@@ -142,7 +142,8 @@
       }
     },
     props: {
-      defautActive: String
+      defautActive: String,
+      userInfo: Object
     },
     methods: {
       foldMenu () {

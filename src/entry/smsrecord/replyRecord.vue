@@ -150,7 +150,8 @@
         this.request(Services.messageRecordReply, params, (remoteData) => {
           this.tableData = remoteData.data.list
           // this.pageSize = remoteData.page_size
-          this.total = parseInt(remoteData.data.total)
+          let total = parseInt(remoteData.data.total)
+          if (total) this.total = total
         })
       }
     },

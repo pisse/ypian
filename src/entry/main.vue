@@ -2,7 +2,7 @@
   <div class="main">
     <ui-header></ui-header>
     <div class="mainContainer">
-      <side-menu defautActive="1"></side-menu>
+      <side-menu defautActive="1" :userInfo="userInfo"></side-menu>
       <div class="right clearfix">
         <div class="middleContent fl">
           <el-row>

@@ -1,8 +1,8 @@
 <template>
   <div class="main">
-    <ui-header @user_info="setUserInfo"></ui-header>
+    <ui-header @user_info="setUserInfo" ></ui-header>
     <div class="mainContainer">
-      <side-menu defautActive="2-2"></side-menu>
+      <side-menu defautActive="2-2" :userInfo="userInfo"></side-menu>
       <div class="right clearfix">
 
         <tabs :routers="routers"></tabs>

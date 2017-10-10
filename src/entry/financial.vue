@@ -1,8 +1,8 @@
 <template>
   <div class="main">
-    <ui-header></ui-header>
+    <ui-header @user_info="setUserInfo"></ui-header>
     <div class="mainContainer">
-      <side-menu defautActive="5-1"></side-menu>
+      <side-menu defautActive="5-1" :userInfo="userInfo"></side-menu>
       <div class="right clearfix">
 
         <tabs :routers="routers"></tabs>
@@ -23,12 +23,18 @@ import tabs from './common/tabs'
 export default {
   data () {
     return {
+      userInfo: {},
       routers: [
         {name: 'daily', label: '日账单'}
       ]
     }
   },
   name: 'app',
+  methods: {
+    setUserInfo (info) {
+      this.userInfo = info
+    }
+  },
   components: {
     uiHeader: Header, sideMenu, tabs
   }

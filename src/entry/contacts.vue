@@ -1,8 +1,8 @@
 <template>
   <div class="main contacts">
-    <ui-header></ui-header>
+    <ui-header @user_info="setUserInfo"></ui-header>
     <div class="mainContainer">
-      <side-menu defautActive="4"></side-menu>
+      <side-menu defautActive="4" :userInfo="userInfo"></side-menu>
       <div class="right clearfix">
         <tabs :routers="routers"  ref="tabs"></tabs>
 
@@ -29,12 +29,16 @@ export default {
   name: 'contacts',
   data () {
     return {
+      userInfo: {},
       routers: [{name: 'contacts', label: '通讯录管理'}, {name: 'upload', label: '通讯录导入导出任务'}]
     }
   },
   methods: {
     routeChange (name) {
       this.$refs.tabs.routerName = name
+    },
+    setUserInfo (info) {
+      this.userInfo = info
     }
   },
   components: {

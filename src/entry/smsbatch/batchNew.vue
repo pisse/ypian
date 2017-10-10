@@ -389,6 +389,7 @@
       return {
         userInfo: {},
         signInfo: [],
+        signNos: [],
         filter_days: [{value: '0', label: '不过滤'}, {value: '1', label: '1天'}, {value: '3', label: '3天'}, {value: '7', label: '7天'}, {value: '30', label: '30天'}],
         filter_day_desc: '（启用过滤功能将避免频繁发送短信给用户）',
         shortLinkForm: {
@@ -407,6 +408,7 @@
           activity_url: '',
           name: '',
           sign: '',
+          sign_id: '',
           remind: '1',
           isopenShortUrl: false,
           time: '',
@@ -503,7 +505,9 @@
         this.request(Services.messageSignInfo, {
         }, (remoteData) => {
           this.userInfo = remoteData.data.user_info || {}
-          this.signInfo = remoteData.data.user_sign || []
+          this.signInfo = _.values(remoteData.data.user_sign || {}) || []
+          this.signNos = _.keys(remoteData.data.user_sign || {})
+
           this.ruleForm.sign = this.signInfo[0] || ''
           this.account.value = this.userInfo.username
         })
@@ -534,6 +538,8 @@
       },
       manualValidate () {
         this.resetManualIpt()
+        this.ruleForm.manualIpt = _.trim(this.ruleForm.manualIpt).replace(/\s+/g, ',').replace(/，/)
+
         let manualIpts = this.phoneCheck(this.ruleForm.manualIpt.split(','))
         this.manualIptErr = manualIpts['errPhones']
         let validPhones = manualIpts['validPhones']
@@ -727,7 +733,8 @@
               // total_message: this.ruleForm.mobile_total * this.smsCount,
               phone_count: this.ruleForm.mobile_total,
               filter_day: this.ruleForm.filter_day,
-              message_count: this.smsCount
+              message_count: this.smsCount,
+              sign_id: this.signNos[this.signInfo.indexOf(this.ruleForm.sign)]
             }
             // console.log(sendForm)
             if (sendForm['send_phone_manual'] || sendForm['send_phone_up_file'] || sendForm['send_phone_list_file']) {

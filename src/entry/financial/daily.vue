@@ -15,6 +15,7 @@
                 stripe
                 style="width: 100%">
           <el-table-column
+              v-if="!show_msg_statistic"
                   prop="date"
                   label="日期"
           >
@@ -25,9 +26,31 @@
           ></el-table-column>-->
             <el-table-column
                     prop="total"
-                    label="条数"
+                    label="短信提交量"
             >
           </el-table-column>
+          <template v-if="show_msg_statistic">
+            <el-table-column
+                prop="fee"
+                label="计费条数"
+            >
+            </el-table-column>
+            <el-table-column
+                prop="success"
+                label="成功条数"
+            >
+            </el-table-column>
+            <el-table-column
+                prop="fail"
+                label="失败条数"
+            >
+            </el-table-column>
+            <el-table-column
+                prop="no"
+                label="未知条数"
+            >
+            </el-table-column>
+          </template>
         </el-table>
       </div>
     </div>
@@ -70,6 +93,7 @@
     data () {
       return {
         userInfo: {},
+        show_msg_statistic: false,
         isLoading: false,
         dataRange: {
           name: '起止时间',
@@ -95,6 +119,7 @@
         params['end_time'] = moment(params['end_time']).format(dateFormat)
         let url = Services.dataFee
         this.request(url, params, (remoteData) => {
+          this.show_msg_statistic = remoteData.show_msg_statist
           this.isLoading = false
           if (remoteData.code == 0) {
             this.formatData(remoteData.data)

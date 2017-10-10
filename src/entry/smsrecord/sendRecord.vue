@@ -8,7 +8,7 @@
       <br/>
       <v-select :formData="formData" ref="status" :opt="status"></v-select>
       <br>
-      <v-button text="查询" @search="getList"></v-button>
+      <v-button text="查询" @search="getList"></v-button> <v-button class="download-wrap" text="下载" @search="download"></v-button>
       <v-title text="发送记录"></v-title>
 
       <div class="record-list">
@@ -27,12 +27,12 @@
                            :width="column.width"
           ></el-table-column>
 
-          <el-table-column
+          <!--<el-table-column
               label="操作">
             <template scope="scope">
               <el-button size="small" @click="download(scope.$index, scope.row)">下载</el-button>
             </template>
-          </el-table-column>
+          </el-table-column>-->
 
         </el-table>
 
@@ -53,6 +53,8 @@
 </template>
 <style lang="stylus" rel="stylesheet/stylus">
   .sendrecord-wrap
+    .download-wrap.search-bar.searchBtn
+        padding-left : 20px
     .record-list
       .table-operations
         text-align : right
