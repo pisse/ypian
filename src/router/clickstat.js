@@ -4,6 +4,7 @@ import Router from 'vue-router'
 import statistic from '../entry/clickStat/statistic'
 import compare from '../entry/clickStat/compare'
 import detail from '../entry/clickStat/detail'
+import device from '../entry/clickStat/device'
 
 Vue.use(Router)
 
@@ -23,6 +24,11 @@ export default new Router({
       path: '/detail',
       name: 'detail',
       component: detail
+    },
+    {
+      path: '/device',
+      name: 'device',
+      component: device
     },
 
     {

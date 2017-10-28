@@ -24,7 +24,12 @@ export default {
   data () {
     return {
       userInfo: {},
-      routers: [{name: 'stat', label: '点击统计', show: true}, {name: 'detail', label: '点击统计明细', show: false}, {name: 'compare', label: '营销对比', show: false}]
+      routers: [
+        {name: 'stat', label: '点击统计', show: true},
+        {name: 'detail', label: '点击统计明细', show: false},
+        {name: 'compare', label: '营销对比', show: false},
+        {name: 'device', label: '设备统计', show: false}
+      ]
     }
   },
   name: 'clickstat',

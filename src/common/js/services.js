@@ -59,6 +59,7 @@ let Services = {
   clickStatList: Domain + 'click-data/list',
   clickStatDetail: Domain + 'click-data/detail',
   clickStatDetailNew: Domain + 'click-data/detail-new',
+  deviceStatistic: Domain + 'click-data/device-statistics',
 
   // 数据统计
   dataRealtimeSend: Domain + 'data/send-amount-actual',

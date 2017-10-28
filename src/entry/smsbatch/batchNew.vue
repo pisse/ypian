@@ -538,7 +538,7 @@
       },
       manualValidate () {
         this.resetManualIpt()
-        this.ruleForm.manualIpt = _.trim(this.ruleForm.manualIpt).replace(/\s+/g, ',').replace(/，/)
+        this.ruleForm.manualIpt = _.trim(this.ruleForm.manualIpt).replace(/\s+/g, ',').replace(/，/g, ',')
 
         let manualIpts = this.phoneCheck(this.ruleForm.manualIpt.split(','))
         this.manualIptErr = manualIpts['errPhones']
@@ -736,7 +736,7 @@
               message_count: this.smsCount,
               sign_id: this.signNos[this.signInfo.indexOf(this.ruleForm.sign)]
             }
-            // console.log(sendForm)
+
             if (sendForm['send_phone_manual'] || sendForm['send_phone_up_file'] || sendForm['send_phone_list_file']) {
               this.requestPost(Services.messageSend, sendForm, (res) => {
                 this.$refs['ruleForm'].resetFields()
@@ -745,7 +745,7 @@
                     this.$router.push({name: 'list'})
                   }
                 })
-              })
+              }, '', true)
             } else {
               this.$alert('手机号为空', '创建失败')
             }

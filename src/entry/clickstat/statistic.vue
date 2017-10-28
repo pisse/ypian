@@ -43,6 +43,7 @@
               width="80px">
             <template scope="scope">
               <!--<el-button @click="onDetail" type="text" size="small">查看</el-button>-->
+              <el-button @click.prevent="onDevice(scope.$index, scope.row)" type="text" size="small">设备统计</el-button>
               <el-button @click.prevent="onDetail(scope.$index, scope.row)" type="text" size="small">查看</el-button>
               <!--<el-button @click.prevent="onDelete" type="text" size="small">删除</el-button>-->
             </template>
@@ -175,6 +176,13 @@
         })
         let id = rowData['id'] || 12
         this.$router.push({name: 'detail', query: { id: id, start_time: rowData.push_start_time }})
+      },
+      onDevice (idx, rowData) {
+        this.tabs.forEach((v, i) => {
+          v['show'] = true
+        })
+        let id = rowData['id'] || 12
+        this.$router.push({name: 'device', query: { id: id, start_time: rowData.push_start_time }})
       },
       compare () {
         let compareIds = this.multipleSelection.map((v, i) => {

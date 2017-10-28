@@ -24,13 +24,53 @@ var base = {
         this.isLoading = false
       }
     },
-    requestPost (url, data, callback, loadingKey) {
+    post (url, data, callback, loadingKey) {
       Vue.http.options.emulateJSON = true
       this.showLoading(loadingKey)
       this.$http.post(url, data, {
         credentials: true,
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      }).then((res) => {
+        res = res.json()
+        return res
+      }).then((remoteData) => {
+        this.closeLoading(loadingKey)
+        // 登录态失效
+        if (remoteData.code === -99999) {
+          this.reLogin()
+        }
+        if (remoteData.code === 0) {
+          callback.call(this, remoteData)
+        } else {
+          this.$alert(remoteData.message, '提示', {
+            type: 'error'
+          })
+        }
+      }).catch((e) => {
+        console.log(e)
+      })
+    },
+    param (data) {
+      var params = [], escape = encodeURIComponent
+      for (var key in data) {
+        params.push(escape(key) + '=' + escape(data[key]))
+      }
+      return params.join('&')
+    },
+    requestPost (url, data, callback, loadingKey, handleEmpty) {
+      Vue.http.options.emulateJSON = true
+      this.showLoading(loadingKey)
+      this.$http.post(url, data, {
+        credentials: true,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        before (request) {
+          if (handleEmpty) {
+            request.body = this.param(data)
+          }
         }
       }).then((res) => {
         res = res.json()
